@@ -9,6 +9,17 @@ export interface LoginUserInformation {
   email: string,
   password: string,
 }
+export interface ResetPasswordInformation {
+  userName: string,
+  email: string,
+}
+export interface ResetPasswordErrorState {
+  userNameError: string,
+  emailError: string,
+  userNameErrorBool: boolean,
+  emailErrorBool: boolean
+}
+
 export interface RegisterErrorResponder {
   fullNameErrorBool: boolean;
   emailErrorBool: boolean;
@@ -27,3 +38,4 @@ export interface LoginErrorResponder {
   emailErrorMessage: string,
   passwordErrorMessage: string,
 }
+
