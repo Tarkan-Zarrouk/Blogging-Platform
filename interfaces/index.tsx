@@ -5,6 +5,10 @@ export interface UserInformation {
   confirmPassword: string;
   termsAccepted: boolean;
 }
+export interface LoginUserInformation {
+  email: string,
+  password: string,
+}
 export interface RegisterErrorResponder {
   fullNameErrorBool: boolean;
   emailErrorBool: boolean;
@@ -16,4 +20,10 @@ export interface RegisterErrorResponder {
   password: string;
   confirmPassword: string;
   termsAccepted: string;
+}
+export interface LoginErrorResponder {
+  emailErrorBool: boolean;
+  passwordErrorBool: boolean;
+  emailErrorMessage: string,
+  passwordErrorMessage: string,
 }
