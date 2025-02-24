@@ -8,6 +8,7 @@ import {
   NavbarMenuToggle,
 } from "@heroui/navbar";
 import { Button } from "@heroui/button";
+import { Link } from "@heroui/link";
 
 const Navigation: React.FC = () => {
   return (
@@ -61,44 +62,52 @@ const Navigation: React.FC = () => {
           </p>
         </NavbarMenuItem>
         <NavbarMenuItem>
-          <Button
-            variant="shadow"
-            color="primary"
-            size="md"
-            className="flex justify-center font-extrabold text-gray-100 text-md hover:-translate-y-1"
-          >
-            Sign Up
-          </Button>
+          <Link href="/register">
+            <Button
+              variant="shadow"
+              color="primary"
+              size="md"
+              className="flex justify-center font-extrabold text-gray-100 text-md hover:-translate-y-1"
+            >
+              Sign Up
+            </Button>
+          </Link>
         </NavbarMenuItem>
         <NavbarMenuItem>
-          <Button
-            variant="faded"
-            color="secondary"
-            className="flex justify-center font-extrabold text-gray-800 text-md hover:-translate-y-1"
-          >
-            Login
-          </Button>
+          <Link href="/login">
+            <Button
+              variant="faded"
+              color="secondary"
+              className="flex justify-center font-extrabold text-gray-800 text-md hover:-translate-y-1"
+            >
+              Login
+            </Button>
+          </Link>
         </NavbarMenuItem>
       </NavbarMenu>
       <div className="hidden xl:flex gap-4">
         <NavbarItem>
-          <Button
-            variant="shadow"
-            color="primary"
-            size="md"
-            className="flex justify-center font-extrabold text-gray-100 text-md hover:-translate-y-1"
-          >
-            Sign Up
-          </Button>
+          <Link href="/register">
+            <Button
+              variant="shadow"
+              color="primary"
+              size="md"
+              className="flex justify-center font-extrabold text-gray-100 text-md hover:-translate-y-1"
+            >
+              Sign Up
+            </Button>
+          </Link>
         </NavbarItem>
         <NavbarItem>
-          <Button
-            variant="faded"
-            color="secondary"
-            className="flex justify-center font-extrabold text-gray-800 text-md hover:-translate-y-1"
-          >
-            Login
-          </Button>
+          <Link href="/login">
+            <Button
+              variant="faded"
+              color="secondary"
+              className="flex justify-center font-extrabold text-gray-800 text-md hover:-translate-y-1"
+            >
+              Login
+            </Button>
+          </Link>
         </NavbarItem>
       </div>
     </Navbar>
