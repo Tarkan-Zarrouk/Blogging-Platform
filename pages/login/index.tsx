@@ -95,6 +95,7 @@ const LoginPage: React.FC = () => {
               variant="underlined"
               label="Email"
               labelPlacement="outside"
+              placeholder="johndoe@example.com"
               isRequired
             />
             <Input
