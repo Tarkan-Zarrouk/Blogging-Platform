@@ -9,6 +9,7 @@ import {
   Form,
   Input,
 } from "@heroui/react";
+import Link from "next/link";
 import React, { useState } from "react";
 
 const Register: React.FC = () => {
@@ -90,10 +91,11 @@ const Register: React.FC = () => {
 
   const handlePasswordChange = (e: React.KeyboardEvent<HTMLInputElement>) => {
     let passwordValue = (e.target as HTMLInputElement).value;
-    if(passwordValue.length < 8) {
+    if (passwordValue.length < 8) {
       setErrorState({
         ...errorState,
-        password: "Please enter a password that is greater than 8 characters in length!",
+        password:
+          "Please enter a password that is greater than 8 characters in length!",
         passwordErrorBool: true,
       });
     } else {
@@ -101,26 +103,27 @@ const Register: React.FC = () => {
         ...errorState,
         password: "",
         passwordErrorBool: false,
-      })
+      });
     }
-  }
-  const handleConfirmPasswordChange = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  };
+  const handleConfirmPasswordChange = (
+    e: React.KeyboardEvent<HTMLInputElement>
+  ) => {
     let confirmPasswordValue = (e.target as HTMLInputElement).value;
-    if(!userInformation.password.match(confirmPasswordValue)) {
+    if (!userInformation.password.match(confirmPasswordValue)) {
       setErrorState({
         ...errorState,
         confirmPassword: "Passwords do not match!",
         confirmPasswordErrorBool: true,
       });
-    }
-    else {
+    } else {
       setErrorState({
         ...errorState,
         confirmPassword: "",
         confirmPasswordErrorBool: false,
       });
     }
-  }
+  };
 
   const registerUser = () => {
     console.log(userInformation);
@@ -214,6 +217,9 @@ const Register: React.FC = () => {
               <Button onPress={registerUser} color="primary" variant="faded">
                 Create Account
               </Button>
+              <p>
+                Already have an account? <Link href="/login" className="underline text-blue-500 animate-pulse">Login here</Link>
+              </p>
             </CardFooter>
           </Form>
         </Card>
