@@ -1,4 +1,5 @@
 import { LoginErrorResponder, LoginUserInformation } from "@/interfaces";
+import { doSignInWithEmailAndPassword } from "@/utils/ConfigFunctions";
 import {
   addToast,
   Button,
@@ -11,6 +12,7 @@ import {
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
+import { app, db } from "@/utils/Firebase";
 
 const LoginPage: React.FC = () => {
   const [userInformation, setUserInformation] = useState<LoginUserInformation>({
@@ -19,17 +21,17 @@ const LoginPage: React.FC = () => {
   });
   const router = useRouter();
   useEffect(() => {
-    if(router.query.registered) {
+    if (router.query.registered) {
       addToast({
         title: "Registration Successful",
         description: "You have successfully registered to Nexus!",
         hideIcon: true,
         timeout: 3000,
         shouldShowTimeoutProgess: true,
-      })
+      });
     }
   }, [router.query, addToast]);
-  
+
   const [errorState, setErrorState] = useState<LoginErrorResponder>({
     emailErrorBool: false,
     passwordErrorBool: false,
@@ -70,25 +72,41 @@ const LoginPage: React.FC = () => {
     });
   };
 
-  const handlePasswordValidation = (
-    e: React.KeyboardEvent<HTMLInputElement>
-  ) => {
-    let passwordValue = (e.target as HTMLInputElement).value;
-    if (passwordValue.length < 8) {
-      setErrorState({
-        ...errorState,
-        passwordErrorMessage:
-          "Please enter a password that is greater than 8 characters in length!",
-        passwordErrorBool: true,
-      });
-    } else {
-      setErrorState({
-        ...errorState,
-        passwordErrorMessage: "",
-        passwordErrorBool: false,
-      });
+  const signInUser = async () => {
+    try {
+      const userCreds = await doSignInWithEmailAndPassword(
+        userInformation.email,
+        userInformation.password
+      );
+      const uid = userCreds.user.uid;
+      if (userCreds) {
+        console.log("e");
+        router.push("/main");
+      }
+    } catch (e) {
+      console.log(e);
     }
   };
+
+  // const handlePasswordValidation = (
+  //   e: React.KeyboardEvent<HTMLInputElement>
+  // ) => {
+  //   let passwordValue = (e.target as HTMLInputElement).value;
+  //   if (passwordValue.length < 8) {
+  //     setErrorState({
+  //       ...errorState,
+  //       passwordErrorMessage:
+  //         "Please enter a password that is greater than 8 characters in length!",
+  //       passwordErrorBool: true,
+  //     });
+  //   } else {
+  //     setErrorState({
+  //       ...errorState,
+  //       passwordErrorMessage: "",
+  //       passwordErrorBool: false,
+  //     });
+  //   }
+  // };
 
   return (
     <>
@@ -129,7 +147,7 @@ const LoginPage: React.FC = () => {
             />
           </CardBody>
           <CardFooter className="justify-center flex flex-col gap-y-5">
-            <Button color="primary" variant="faded">
+            <Button onPress={signInUser} color="primary" variant="faded">
               Sign In
             </Button>
             <p className="text-[15px]">
