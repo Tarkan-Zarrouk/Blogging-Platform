@@ -158,8 +158,9 @@ const Register: React.FC = () => {
 
         setLoading(false);
       } else {
-        let userUuid = uuid();
-        await setDoc(doc(db, "users", userUuid), {
+        let userCreds = await doCreateUserWithEmailAndPassword(userInformation.email, userInformation.password);
+        let userUUID = userCreds.user.uid;
+        await setDoc(doc(db, "users", userUUID), {
           email: userInformation.email,
           fullName: userInformation.fullName,
           password: userInformation.password,
