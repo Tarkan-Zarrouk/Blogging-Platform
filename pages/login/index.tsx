@@ -1,5 +1,6 @@
 import { LoginErrorResponder, LoginUserInformation } from "@/interfaces";
 import {
+  addToast,
   Button,
   Card,
   CardBody,
@@ -8,13 +9,27 @@ import {
   Input,
 } from "@heroui/react";
 import Link from "next/link";
-import React, { useState } from "react";
+import { useRouter } from "next/router";
+import React, { useEffect, useState } from "react";
 
 const LoginPage: React.FC = () => {
   const [userInformation, setUserInformation] = useState<LoginUserInformation>({
     email: "",
     password: "",
   });
+  const router = useRouter();
+  useEffect(() => {
+    if(router.query.registered) {
+      addToast({
+        title: "Registration Successful",
+        description: "You have successfully registered to Nexus!",
+        hideIcon: true,
+        timeout: 3000,
+        shouldShowTimeoutProgess: true,
+      })
+    }
+  }, [router.query, addToast]);
+  
   const [errorState, setErrorState] = useState<LoginErrorResponder>({
     emailErrorBool: false,
     passwordErrorBool: false,

@@ -45,43 +45,43 @@ const Navigation: React.FC = () => {
           </p>
         </NavbarItem>
       </NavbarContent>
-      <NavbarMenu className="md:hidden">
+      <NavbarMenu className="align-middle md:hidden flex flex-col items-center">
         <NavbarMenuItem>
           <p className="font-medium text-lg duration-300 ease-in-out hover:-translate-y-1 hover:text-foreground-500 transition-all">
-            Home
+        Home
           </p>
         </NavbarMenuItem>
         <NavbarMenuItem>
           <p className="font-medium text-lg duration-300 ease-in-out hover:-translate-y-1 hover:text-foreground-500 transition-all">
-            About
+        About
           </p>
         </NavbarMenuItem>
         <NavbarMenuItem>
           <p className="font-medium text-lg duration-300 ease-in-out hover:-translate-y-1 hover:text-foreground-500 transition-all">
-            Contact
+        Contact
           </p>
         </NavbarMenuItem>
         <NavbarMenuItem>
           <Link href="/register">
-            <Button
-              variant="shadow"
-              color="primary"
-              size="md"
-              className="flex justify-center font-extrabold text-gray-100 text-md hover:-translate-y-1"
-            >
-              Sign Up
-            </Button>
+        <Button
+          variant="shadow"
+          color="primary"
+          size="md"
+          className="flex justify-center font-extrabold text-gray-100 text-md hover:-translate-y-1"
+        >
+          Sign Up
+        </Button>
           </Link>
         </NavbarMenuItem>
         <NavbarMenuItem>
           <Link href="/login">
-            <Button
-              variant="faded"
-              color="secondary"
-              className="flex justify-center font-extrabold text-gray-800 text-md hover:-translate-y-1"
-            >
-              Login
-            </Button>
+        <Button
+          variant="faded"
+          color="secondary"
+          className="flex justify-center font-extrabold text-gray-800 text-md hover:-translate-y-1"
+        >
+          Login
+        </Button>
           </Link>
         </NavbarMenuItem>
       </NavbarMenu>

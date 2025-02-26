@@ -1,4 +1,6 @@
 import { UserInformation, RegisterErrorResponder } from "@/interfaces";
+import { doCreateUserWithEmailAndPassword } from "@/utils/ConfigFunctions";
+import { db } from "@/utils/Firebase";
 import {
   Button,
   Card,
@@ -9,8 +11,11 @@ import {
   Form,
   Input,
 } from "@heroui/react";
+import { doc, setDoc } from "firebase/firestore";
 import Link from "next/link";
-import React, { useState } from "react";
+import { useRouter } from "next/router";
+import React, { useEffect, useState } from "react";
+import uuid from "uuid-random";
 
 const Register: React.FC = () => {
   const [userInformation, setUserInformation] = useState<UserInformation>({
@@ -32,6 +37,9 @@ const Register: React.FC = () => {
     confirmPassword: "",
     termsAccepted: "",
   });
+  const [registered, isRegistered] = useState<Boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
+  const router = useRouter();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUserInformation({
@@ -125,8 +133,23 @@ const Register: React.FC = () => {
     }
   };
 
-  const registerUser = () => {
-    console.log(userInformation);
+  const registerUser = async () => {
+    try {
+      setLoading(true);
+      let userCredits = doCreateUserWithEmailAndPassword(userInformation.email, userInformation.password);
+      let userUuid = uuid();
+      await setDoc(doc(db, "users", userUuid), {
+        email: userInformation.email,
+        fullName: userInformation.fullName,
+        password: userInformation.password,
+        tosAcceptance: userInformation.termsAccepted
+      }).then(() => {
+        setLoading(false);
+        router.push("/login?registered=true");
+      })
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   return (
@@ -214,7 +237,7 @@ const Register: React.FC = () => {
               >
                 I Agree to the Terms and Conditions
               </Checkbox>
-              <Button onPress={registerUser} color="primary" variant="faded">
+              <Button isLoading={loading} onPress={registerUser} color="primary" variant="faded">
                 Create Account
               </Button>
               <p>
