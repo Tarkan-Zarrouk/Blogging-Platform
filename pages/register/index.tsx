@@ -136,17 +136,39 @@ const Register: React.FC = () => {
   const registerUser = async () => {
     try {
       setLoading(true);
-      let userCredits = doCreateUserWithEmailAndPassword(userInformation.email, userInformation.password);
-      let userUuid = uuid();
-      await setDoc(doc(db, "users", userUuid), {
-        email: userInformation.email,
-        fullName: userInformation.fullName,
-        password: userInformation.password,
-        tosAcceptance: userInformation.termsAccepted
-      }).then(() => {
+      if (
+        userInformation.fullName.length < 5 ||
+        !userInformation.fullName.includes(" ") ||
+        (userInformation.fullName.length < 5 &&
+          !userInformation.fullName.includes(" "))
+      ) {
+        // set error state for all fields (fullName, email, password, confirmPassword)
+        setErrorState({
+          ...errorState,
+          fullName: "Please enter a valid full name!",
+          fullNameErrorBool: true,
+          email: "Please enter a proper email!",
+          emailErrorBool: true,
+          password: "Please enter a password that is greater than 8 characters in length!",
+          passwordErrorBool: true,
+          confirmPassword: "Passwords do not match!",
+          confirmPasswordErrorBool: true,
+        });
+
+
         setLoading(false);
-        router.push("/login?registered=true");
-      })
+      } else {
+        let userUuid = uuid();
+        await setDoc(doc(db, "users", userUuid), {
+          email: userInformation.email,
+          fullName: userInformation.fullName,
+          password: userInformation.password,
+          tosAcceptance: userInformation.termsAccepted,
+        }).then(() => {
+          setLoading(false);
+          router.push("/login?registered=true");
+        });
+      }
     } catch (e) {
       console.log(e);
     }
@@ -237,11 +259,22 @@ const Register: React.FC = () => {
               >
                 I Agree to the Terms and Conditions
               </Checkbox>
-              <Button isLoading={loading} onPress={registerUser} color="primary" variant="faded">
+              <Button
+                isLoading={loading}
+                onPress={registerUser}
+                color="primary"
+                variant="faded"
+              >
                 Create Account
               </Button>
               <p>
-                Already have an account? <Link href="/login" className="underline text-blue-500 animate-pulse">Login here</Link>
+                Already have an account?{" "}
+                <Link
+                  href="/login"
+                  className="underline text-blue-500 animate-pulse"
+                >
+                  Login here
+                </Link>
               </p>
             </CardFooter>
           </Form>
