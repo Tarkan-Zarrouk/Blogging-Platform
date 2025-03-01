@@ -296,7 +296,7 @@ const Settings = () => {
                   </div>
                   <div className="grid grid-cols-2 items-center mt-10">
                     <h1 className="text-2xl font-semibold text-gray-800">
-                      Change Your Email:
+                      Change Your Full Name:
                     </h1>
                     <div className="grid grid-cols-2 gap-4 items-center">
                       <div className="col-span-1">
@@ -321,7 +321,7 @@ const Settings = () => {
                   </div>
                   <div className="grid grid-cols-2 items-center mt-10">
                     <h1 className="text-2xl font-semibold text-gray-800">
-                      Change Your Full Name:
+                      Change Your Email:
                     </h1>
                     <div className="grid grid-cols-2 gap-4 items-center">
                       <div className="col-span-1">
@@ -339,7 +339,7 @@ const Settings = () => {
                           color="primary"
                           onPress={updateEmailInfo}
                         >
-                          Update Full Name
+                          Update Email
                         </Button>
                       </div>
                     </div>
