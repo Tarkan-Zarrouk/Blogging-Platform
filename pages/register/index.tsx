@@ -168,6 +168,7 @@ const Register: React.FC = () => {
           email: userInformation.email,
           fullName: userInformation.fullName,
           tosAcceptance: userInformation.termsAccepted,
+          profilePicture: "",
         }).then(() => {
           setLoading(false);
           router.push("/login?registered=true");

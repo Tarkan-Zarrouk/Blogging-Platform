@@ -2,6 +2,8 @@ import SettingsIcon from "@/components/icons/SettingsIcon";
 import SignOutIcon from "@/components/icons/SignOutIcon";
 import ProfileIcon from "@/components/icons/UserIcon";
 import { doSignOut } from "@/utils/firebase/ConfigFunctions";
+import { auth, db, firebaseConfig } from "@/utils/firebase/Firebase";
+import { GeneralUserInfo } from "@/utils/types/Types";
 import {
   Button,
   Modal,
@@ -15,10 +17,41 @@ import {
   useDisclosure,
   User,
 } from "@heroui/react";
-import router from "next/router";
+import { doc, getDoc } from "firebase/firestore";
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
 
 export const UserComponent: React.FC = () => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const [userInformation, setUserInformation] = useState<GeneralUserInfo>({
+    fullName: "",
+    profilePicture: "",
+    uid: "",
+  });
+  const router = useRouter();
+  useEffect(() => {
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        const docRef = doc(db, "users", user.uid);
+        getDoc(docRef).then((docSnap) => {
+          if (docSnap.exists()) {
+            const userData = docSnap.data();
+            setUserInformation({
+              fullName: userData.fullName,
+              /**
+               * @IMPORTANT: When going to import pfp, convert to base64 then attatch "data:image/jpeg;base64,/" :)) thank me later
+               */
+              profilePicture: userData.profilePicture || "",
+              uid: user.uid,
+            });
+          }
+        });
+      } else {
+        router.push("/");
+      }
+    });
+  }, []);
+  console.log(userInformation);
   return (
     <>
       <div className="flex justify-center">
@@ -26,8 +59,11 @@ export const UserComponent: React.FC = () => {
           <PopoverTrigger>
             <Button className="" variant="light">
               <User
-                description="Username (Full Name)"
-                name="Jane Doe"
+                description={userInformation.fullName}
+                name={userInformation.fullName}
+                avatarProps={{
+                  src: userInformation.profilePicture,
+                }}
                 className="transition-transform duration-300 hover:-translate-y-1"
               />
             </Button>
@@ -46,6 +82,7 @@ export const UserComponent: React.FC = () => {
                 className="gap-x-5 self-center w-full text-end"
                 startContent={<SettingsIcon />}
                 variant="light"
+                onPress={() => router.push("/settings")}
                 style={{ justifyContent: "flex-start" }}
               >
                 Settings
