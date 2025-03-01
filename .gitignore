@@ -40,3 +40,5 @@ firestore.indexes.json
 firestore.rules
 
 .env
+
+/robots
