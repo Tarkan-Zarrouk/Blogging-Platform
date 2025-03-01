@@ -112,6 +112,50 @@ const Settings = () => {
       }
     });
   };
+  const handleFullNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setUserInformation((prevState) => ({
+      ...prevState,
+      fullName: e.target.value,
+    }));
+  }
+  const updateFullName = () => {
+    if (!userInformation.uid) {
+      addToast({
+        title: "Error",
+        description: "User ID is missing!",
+        hideIcon: true,
+        timeout: 3000,
+        shouldShowTimeoutProgess: true,
+      });
+      return;
+    }
+
+    getDoc(doc(db, "users", userInformation.uid)).then((docSnap) => {
+      if (docSnap.exists()) {
+        updateDoc(docSnap.ref, {
+          fullName: userInformation.fullName,
+        })
+          .then(() => {
+            addToast({
+              title: "Success",
+              description: "Full Name updated successfully!",
+              hideIcon: true,
+              timeout: 3000,
+              shouldShowTimeoutProgess: true,
+            });
+          })
+          .catch((error) => {
+            addToast({
+              title: "Error",
+              description: `Failed to update full name: ${error.message}`,
+              hideIcon: true,
+              timeout: 3000,
+              shouldShowTimeoutProgess: true,
+            });
+          });
+      }
+    });
+  }
 
   return (
     <>
@@ -124,7 +168,7 @@ const Settings = () => {
             <CardHeader className="border-b-2">
               <div>
                 <h1 className="text-5xl font-bold underline text-gray-800 mb-5">
-                  Welcome to Settings!
+                  Welcome to the Settings!
                 </h1>
                 <h4 className="text-xl">Personalize is here! 😊</h4>
               </div>
@@ -137,10 +181,14 @@ const Settings = () => {
                       <label htmlFor="avatar">
                         <h1 className="text-2xl font-bold">Profile Picture</h1>
                       </label>
-                      <Avatar id="avatar" src={userInformation.profilePicture} className="h-24 w-24" />
+                      <Avatar
+                        id="avatar"
+                        src={userInformation.profilePicture}
+                        className="h-24 w-24"
+                      />
                     </div>
                     <div className="grid col-span-1">
-                      <div className="grid grid-cols-2 items-center">
+                      <div className="grid grid-cols-2 items-center gap-4">
                         <div className="grid col-span-1">
                           <Input
                             type="file"
@@ -165,6 +213,29 @@ const Settings = () => {
                       </div>
                     </div>
                   </div>
+                    <div className="grid grid-cols-2 items-center mt-10">
+                      <h1 className="text-2xl font-semibold text-gray-800">Change Your Full Name:</h1>
+                      <div className="grid grid-cols-2 gap-4 items-center">
+                        <div className="col-span-1">
+                          <Input
+                            variant="underlined"
+                            label="Full Name"
+                            color="primary"
+                            value={userInformation.fullName}
+                            onChange={handleFullNameChange}
+                          />
+                        </div>
+                        <div className="col-span-1 mt-5">
+                          <Button
+                            variant="bordered"
+                            color="primary"
+                            onPress={updateFullName}
+                          >
+                            Update Full Name
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
                 </div>
               </div>
             </CardBody>
