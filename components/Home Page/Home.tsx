@@ -6,8 +6,10 @@ import { Skeleton } from "@heroui/skeleton";
 import { Button } from "@heroui/button";
 import DownArrowIcon from "../icons/DownArrowIcon";
 import ThreeDotsMenuIcon from "../icons/ThreeDotsMenuIcon";
+import { useRouter } from "next/router";
 
 const Home: React.FC = () => {
+  const router = useRouter();
   const [buttonSize, setButtonSize] = useState<"sm" | "lg" | "md" | undefined>(
     typeof window !== "undefined" && window.innerWidth < 1024 ? "sm" : "lg"
   );
@@ -46,6 +48,7 @@ const Home: React.FC = () => {
               variant="shadow"
               color="primary"
               className="flex justify-center font-extrabold text-gray-100 text-md animate-pulse hover:-translate-y-1"
+              onPress={() => router.push("/register")}
             >
               Sign Up
             </Button>
@@ -54,6 +57,7 @@ const Home: React.FC = () => {
               variant="faded"
               color="secondary"
               className="flex justify-center font-extrabold text-gray-800 text-md animate-pulse hover:-translate-y-1"
+              onPress={() => router.push("/login")}
             >
               Login
             </Button>
@@ -105,7 +109,7 @@ const Home: React.FC = () => {
         <Button
           isIconOnly
           className="fixed bottom-10 right-1/2 transform translate-x-1/2 translate-y-1/2 animate-bounce transition-opacity duration-500"
-          onClick={() => {
+          onPress={() => {
             const homeSection = document.getElementById("about");
             if (homeSection) {
               homeSection.scrollIntoView({ behavior: "smooth" });

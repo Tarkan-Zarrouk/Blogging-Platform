@@ -1,7 +1,8 @@
+import { doSendResetEmail } from "@/utils/ConfigFunctions";
 import {
   ResetPasswordErrorState,
   ResetPasswordInformation,
-} from "@/interfaces";
+} from "@/utils/interfaces";
 import {
   Button,
   Card,
@@ -15,15 +16,13 @@ import Link from "next/link";
 import { useState } from "react";
 
 const ResetPassword: React.FC = () => {
+  const [loading, isLoading] = useState<boolean>(false);
   const [userInformation, setUserInformation] =
     useState<ResetPasswordInformation>({
-      userName: "",
       email: "",
     });
   const [errorState, setErrorState] = useState<ResetPasswordErrorState>({
-    userNameError: "",
     emailError: "",
-    userNameErrorBool: false,
     emailErrorBool: false,
   });
 
@@ -54,21 +53,10 @@ const ResetPassword: React.FC = () => {
     }
   };
 
-  const handleUserNameChange = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    let userNameValue = (e.target as HTMLInputElement).value; // constant update
-    if (userNameValue.length < 5) {
-      setErrorState({
-        ...errorState,
-        userNameError: "Please enter a valid username!",
-        userNameErrorBool: true,
-      });
-    } else {
-      setErrorState({
-        ...errorState,
-        userNameError: "",
-        userNameErrorBool: false,
-      });
-    }
+  const resetPassword = () => {
+    isLoading(true); // toggle on spinner for button
+    doSendResetEmail(userInformation.email); // send password reset email
+    isLoading(false);
   };
 
   return (
@@ -84,38 +72,28 @@ const ResetPassword: React.FC = () => {
             </CardHeader>
             <CardBody className="gap-y-5">
               <Input
-                isInvalid={errorState.userNameErrorBool}
-                errorMessage={errorState.userNameError}
-                onKeyUp={handleUserNameChange}
-                onChange={handleInputChange}
-                placeholder="xXCoolKidXx123_"
-                type="name"
-                name="userName"
-                label="Username"
-                labelPlacement="outside"
-                variant="underlined"
-                color="primary"
-                isClearable
-                isRequired
-              />
-              <Input
                 isInvalid={errorState.emailErrorBool}
-                errorMessage={errorState.emailError}
+                errorMessage={errorState.emailErrorBool}
                 onKeyUp={handleEmailChange}
                 onChange={handleInputChange}
-                type="email"
+                placeholder="jakeJones@example.com"
+                type="name"
                 name="email"
-                color="primary"
-                variant="underlined"
                 label="Email"
                 labelPlacement="outside"
-                placeholder="johndoe@example.com"
+                variant="underlined"
+                color="primary"
                 isClearable
                 isRequired
               />
             </CardBody>
             <CardFooter className="justify-center flex flex-col gap-y-5">
-              <Button color="primary" variant="faded">
+              <Button
+                isLoading={loading}
+                color="primary"
+                variant="faded"
+                onPress={resetPassword}
+              >
                 Reset Password
               </Button>
               <Link href="/login">

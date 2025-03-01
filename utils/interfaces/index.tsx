@@ -6,18 +6,15 @@ export interface UserInformation {
   termsAccepted: boolean;
 }
 export interface LoginUserInformation {
-  email: string,
-  password: string,
+  email: string;
+  password: string;
 }
 export interface ResetPasswordInformation {
-  userName: string,
-  email: string,
+  email: string;
 }
 export interface ResetPasswordErrorState {
-  userNameError: string,
-  emailError: string,
-  userNameErrorBool: boolean,
-  emailErrorBool: boolean
+  emailError: string;
+  emailErrorBool: boolean;
 }
 
 export interface RegisterErrorResponder {
@@ -35,7 +32,6 @@ export interface RegisterErrorResponder {
 export interface LoginErrorResponder {
   emailErrorBool: boolean;
   passwordErrorBool: boolean;
-  emailErrorMessage: string,
-  passwordErrorMessage: string,
+  emailErrorMessage: string;
+  passwordErrorMessage: string;
 }
-

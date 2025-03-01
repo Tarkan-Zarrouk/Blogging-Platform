@@ -1,4 +1,4 @@
-import { UserInformation, RegisterErrorResponder } from "@/interfaces";
+import { UserInformation, RegisterErrorResponder } from "@/utils/interfaces";
 import { doCreateUserWithEmailAndPassword } from "@/utils/ConfigFunctions";
 import { db } from "@/utils/Firebase";
 import {
@@ -14,8 +14,9 @@ import {
 import { doc, setDoc } from "firebase/firestore";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import React, { useEffect, useState } from "react";
-import uuid from "uuid-random";
+import React, { useState } from "react";
+import EyeClosedIcon from "@/components/icons/EyeClosedIcon";
+import EyeOpenIcon from "@/components/icons/EyeOpenIcon";
 
 const Register: React.FC = () => {
   const [userInformation, setUserInformation] = useState<UserInformation>({
@@ -37,7 +38,7 @@ const Register: React.FC = () => {
     confirmPassword: "",
     termsAccepted: "",
   });
-  const [registered, isRegistered] = useState<Boolean>(false);
+  const [isVisible, setIsVisible] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const router = useRouter();
 
@@ -149,21 +150,23 @@ const Register: React.FC = () => {
           fullNameErrorBool: true,
           email: "Please enter a proper email!",
           emailErrorBool: true,
-          password: "Please enter a password that is greater than 8 characters in length!",
+          password:
+            "Please enter a password that is greater than 8 characters in length!",
           passwordErrorBool: true,
           confirmPassword: "Passwords do not match!",
           confirmPasswordErrorBool: true,
         });
 
-
         setLoading(false);
       } else {
-        let userCreds = await doCreateUserWithEmailAndPassword(userInformation.email, userInformation.password);
+        let userCreds = await doCreateUserWithEmailAndPassword(
+          userInformation.email,
+          userInformation.password
+        );
         let userUUID = userCreds.user.uid;
         await setDoc(doc(db, "users", userUUID), {
           email: userInformation.email,
           fullName: userInformation.fullName,
-          password: userInformation.password,
           tosAcceptance: userInformation.termsAccepted,
         }).then(() => {
           setLoading(false);
@@ -224,7 +227,7 @@ const Register: React.FC = () => {
                 isInvalid={errorState.passwordErrorBool}
                 errorMessage={errorState.password}
                 placeholder="SomeCoolPassword123!"
-                type="password"
+                type={isVisible ? "password" : "text"}
                 value={userInformation.password}
                 onChange={handleInputChange}
                 name="password"
@@ -232,7 +235,18 @@ const Register: React.FC = () => {
                 labelPlacement="outside"
                 variant="underlined"
                 color="primary"
-                isClearable
+                endContent={
+                  <>
+                    <Button
+                      isIconOnly
+                      variant="light"
+                      size="sm"
+                      onPress={() => setIsVisible(!isVisible)}
+                    >
+                      {isVisible ? <EyeOpenIcon /> : <EyeClosedIcon />}
+                    </Button>
+                  </>
+                }
                 isRequired
               />
               <Input

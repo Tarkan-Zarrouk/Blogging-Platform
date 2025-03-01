@@ -1,4 +1,4 @@
-import { LoginErrorResponder, LoginUserInformation } from "@/interfaces";
+import { LoginErrorResponder, LoginUserInformation } from "@/utils/interfaces";
 import { doSignInWithEmailAndPassword } from "@/utils/ConfigFunctions";
 import {
   addToast,
@@ -12,13 +12,15 @@ import {
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
-import { app, db } from "@/utils/Firebase";
+import EyeOpenIcon from "@/components/icons/EyeOpenIcon";
+import EyeClosedIcon from "@/components/icons/EyeClosedIcon";
 
 const LoginPage: React.FC = () => {
   const [userInformation, setUserInformation] = useState<LoginUserInformation>({
     email: "",
     password: "",
   });
+  const [isVisible, setIsVisible] = useState<boolean>(false);
   const router = useRouter();
   useEffect(() => {
     if (router.query.registered) {
@@ -73,18 +75,34 @@ const LoginPage: React.FC = () => {
   };
 
   const signInUser = async () => {
-    try {
-      const userCreds = await doSignInWithEmailAndPassword(
-        userInformation.email,
-        userInformation.password
-      );
-      const uid = userCreds.user.uid;
-      if (userCreds) {
-        console.log("e");
-        router.push("/main");
-      }
-    } catch (e) {
-      console.log(e);
+    if (!testEmail(userInformation.email)) {
+      setErrorState({
+        ...errorState,
+        emailErrorBool: true,
+        emailErrorMessage: "Please enter a valid email address.",
+      });
+      return;
+    }
+
+    if (userInformation.password.length < 8) {
+      setErrorState({
+        ...errorState,
+        passwordErrorBool: true,
+        passwordErrorMessage:
+          "Please enter a password that is greater than 8 characters in length!",
+      });
+      return;
+    }
+
+    const userCreds = await doSignInWithEmailAndPassword(
+      userInformation.email,
+      userInformation.password
+    );
+
+    if (userCreds) {
+      router.push("/main");
+    } else {
+      alert("Invalid email or password.");
     }
   };
 
@@ -136,13 +154,24 @@ const LoginPage: React.FC = () => {
               errorMessage={errorState.passwordErrorMessage}
               onChange={handlePasswordChange}
               placeholder="SomeCoolPassword123!"
-              type="password"
+              type={isVisible ? "password" : "text"}
               name="password"
               label="Password"
               labelPlacement="outside"
               variant="underlined"
               color="primary"
-              isClearable
+              endContent={
+                <>
+                  <Button
+                    isIconOnly
+                    variant="light"
+                    size="sm"
+                    onPress={() => setIsVisible(!isVisible)}
+                  >
+                    {isVisible ? <EyeOpenIcon /> : <EyeClosedIcon />}
+                  </Button>
+                </>
+              }
               isRequired
             />
           </CardBody>
