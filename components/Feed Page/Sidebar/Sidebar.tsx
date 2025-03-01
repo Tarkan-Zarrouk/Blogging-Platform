@@ -1,4 +1,8 @@
 import SettingsIcon from "@/components/icons/SettingsIcon";
+import { BookmarksIcon } from "@/components/icons/SidebarIcons/BookmarksIcon";
+import { CreatePostIcon } from "@/components/icons/SidebarIcons/CreatePostIcon";
+import { ExploreIcon } from "@/components/icons/SidebarIcons/ExploreIcon";
+import { HomeIcon } from "@/components/icons/SidebarIcons/HomeIcon";
 import SignOutIcon from "@/components/icons/SignOutIcon";
 import ProfileIcon from "@/components/icons/UserIcon";
 import { doSignOut } from "@/utils/firebase/ConfigFunctions";
@@ -39,16 +43,44 @@ const Sidebar = () => {
         </CardHeader>
         <CardBody>
           <div className="space-y-4">
-            <Button className="w-full font-bold text-xl" variant="light">
+            <Button
+              className="w-full font-bold text-xl flex justify-between hover:-translate-y-1"
+              variant="light"
+              startContent={
+                <>
+                  <HomeIcon />
+                </>
+              }
+            >
               Home
             </Button>
-            <Button className="w-full font-bold text-xl" variant="light">
+            <Button
+              className="w-full font-bold text-xl flex justify-between hover:-translate-y-1"
+              variant="light"
+              startContent={
+                <>
+                  <ExploreIcon />
+                </>
+              }
+            >
               Explore
             </Button>
-            <Button className="w-full font-bold text-xl" variant="light">
+            <Button
+              className="w-full font-bold text-xl flex justify-between hover:-translate-y-1"
+              variant="light"
+              startContent={
+                <>
+                  <CreatePostIcon />
+                </>
+              }
+            >
               Create Post
             </Button>
-            <Button className="w-full font-bold text-xl" variant="light">
+            <Button className="w-full font-bold text-xl flex justify-between hover:-translate-y-1" variant="light" startContent={
+              <>
+              <BookmarksIcon />
+              </>
+            }>
               Bookmarks
             </Button>
           </div>
@@ -58,7 +90,7 @@ const Sidebar = () => {
             <Popover showArrow placement="right-start">
               <PopoverTrigger>
                 <Button className="" variant="light">
-                  <User description="Username (Full Name)" name="Jane Doe" />
+                  <User description="Username (Full Name)" name="Jane Doe" className="transition-transform duration-300 hover:-translate-y-1" />
                 </Button>
               </PopoverTrigger>
               <PopoverContent>
