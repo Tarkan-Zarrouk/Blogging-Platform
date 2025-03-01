@@ -1,7 +1,7 @@
 import SettingsIcon from "@/components/icons/SettingsIcon";
 import SignOutIcon from "@/components/icons/SignOutIcon";
 import ProfileIcon from "@/components/icons/UserIcon";
-import { doSignOut } from "@/utils/ConfigFunctions";
+import { doSignOut } from "@/utils/firebase/ConfigFunctions";
 import {
   Button,
   Card,

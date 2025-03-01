@@ -1,4 +1,4 @@
-import { doSendResetEmail } from "@/utils/ConfigFunctions";
+import { doSendResetEmail } from "@/utils/firebase/ConfigFunctions";
 import {
   ResetPasswordErrorState,
   ResetPasswordInformation,

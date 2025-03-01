@@ -1,5 +1,5 @@
 import { LoginErrorResponder, LoginUserInformation } from "@/utils/interfaces";
-import { doSignInWithEmailAndPassword } from "@/utils/ConfigFunctions";
+import { doSignInWithEmailAndPassword } from "@/utils/firebase/ConfigFunctions";
 import {
   addToast,
   Button,

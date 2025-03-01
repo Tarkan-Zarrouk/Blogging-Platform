@@ -1,6 +1,6 @@
 import { UserInformation, RegisterErrorResponder } from "@/utils/interfaces";
-import { doCreateUserWithEmailAndPassword } from "@/utils/ConfigFunctions";
-import { db } from "@/utils/Firebase";
+import { doCreateUserWithEmailAndPassword } from "@/utils/firebase/ConfigFunctions";
+import { db } from "@/utils/firebase/Firebase";
 import {
   Button,
   Card,
