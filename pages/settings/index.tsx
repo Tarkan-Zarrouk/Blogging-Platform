@@ -1,5 +1,5 @@
 import Sidebar from "@/components/Feed Page/Sidebar/Sidebar";
-import { doSignInWithEmailAndPassword } from "@/utils/firebase/ConfigFunctions";
+import { doDeleteUser, doSignInWithEmailAndPassword } from "@/utils/firebase/ConfigFunctions";
 import { auth, db } from "@/utils/firebase/Firebase";
 import {
   addToast,
@@ -9,14 +9,21 @@ import {
   CardBody,
   CardHeader,
   Input,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  useDisclosure,
 } from "@heroui/react";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { deleteDoc, doc, getDoc, updateDoc } from "firebase/firestore";
 import { updateEmail, updatePassword } from "firebase/auth";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
 const Settings = () => {
   const router = useRouter();
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [userInformation, setUserInformation] = useState({
     fullName: "",
     profilePicture: "",
@@ -260,61 +267,103 @@ const Settings = () => {
         return updateDoc(docSnap.ref, {
           password: userInformation.password,
         })
-        .then(() => {
-          addToast({
-            title: "Success",
-            description: "Password updated successfully!",
-            hideIcon: true,
-            timeout: 3000,
-            shouldShowTimeoutProgess: true,
-          });
-  
-          const password = prompt(
-            "Please enter your password to re-authenticate:"
-          );
-          if (!password) {
+          .then(() => {
             addToast({
-              title: "Error",
-              description: "Invalid",
+              title: "Success",
+              description: "Password updated successfully!",
               hideIcon: true,
               timeout: 3000,
               shouldShowTimeoutProgess: true,
             });
-            return;
-          }
-  
-          userInformation.password = password;
-          return doSignInWithEmailAndPassword(
-            auth.currentUser?.email || "",
-            userInformation.password
-          );
-        })
-        .then((userCreds) => {
-          if (userCreds) {
-            return updatePassword(userCreds.user, userInformation.email);
-          }
-        })
-        .then(() => {
-          addToast({
-            title: "Success",
-            description: "Authentication password updated successfully!",
-            hideIcon: true,
-            timeout: 3000,
-            shouldShowTimeoutProgess: true,
+
+            const password = prompt(
+              "Please enter your password to re-authenticate:"
+            );
+            if (!password) {
+              addToast({
+                title: "Error",
+                description: "Invalid",
+                hideIcon: true,
+                timeout: 3000,
+                shouldShowTimeoutProgess: true,
+              });
+              return;
+            }
+
+            userInformation.password = password;
+            return doSignInWithEmailAndPassword(
+              auth.currentUser?.email || "",
+              userInformation.password
+            );
+          })
+          .then((userCreds) => {
+            if (userCreds) {
+              return updatePassword(userCreds.user, userInformation.email);
+            }
+          })
+          .then(() => {
+            addToast({
+              title: "Success",
+              description: "Authentication password updated successfully!",
+              hideIcon: true,
+              timeout: 3000,
+              shouldShowTimeoutProgess: true,
+            });
+          })
+          .catch((error) => {
+            addToast({
+              title: "Error",
+              description: `Failed to update password: ${error.message}`,
+              hideIcon: true,
+              timeout: 3000,
+              shouldShowTimeoutProgess: true,
+            });
           });
-        })
-        .catch((error) => {
-          addToast({
-            title: "Error",
-            description: `Failed to update password: ${error.message}`,
-            hideIcon: true,
-            timeout: 3000,
-            shouldShowTimeoutProgess: true,
-          });
-        });
       }
     });
   };
+  const deleteAccount = () => {
+    const password = prompt("Please enter your password to re-authenticate:");
+    if (!password) {
+      addToast({
+        title: "Error",
+        description: "Password is required to delete account!",
+        hideIcon: true,
+        timeout: 3000,
+        shouldShowTimeoutProgess: true,
+      });
+      return;
+    }
+    getDoc(doc(db, "users", userInformation.uid))
+      .then((docSnap) => {
+        if(docSnap.exists()) {
+            deleteDoc(docSnap.ref);
+        }
+      })
+    doSignInWithEmailAndPassword(auth.currentUser?.email || "", password)
+      .then((userCreds) => {
+        userCreds.user.delete();
+      })
+      .then(() => {
+        addToast({
+          title: "Success",
+          description: "Account deleted successfully!",
+          hideIcon: true,
+          timeout: 3000,
+          shouldShowTimeoutProgess: true,
+        });
+        router.push("/");
+      })
+      .catch((error) => {
+        addToast({
+          title: "Error",
+          description: `Failed to delete account: ${error.message}`,
+          hideIcon: true,
+          timeout: 3000,
+          shouldShowTimeoutProgess: true,
+        });
+      });
+  }
 
   return (
     <>
@@ -446,6 +495,50 @@ const Settings = () => {
                         </Button>
                       </div>
                     </div>
+                  </div>
+                  <div className="grid items-center mt-10">
+                    <Button onPress={onOpen} variant="bordered" color="danger">
+                      Delete Account
+                    </Button>
+                    <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+                      <ModalContent className="p-5">
+                        {(onClose) => (
+                          <>
+                            <ModalHeader>
+                              <h1 className="text-xl text-danger-500">
+                                Woah, hold it right there partner! 🛑
+                              </h1>
+                            </ModalHeader>
+                            <ModalBody>
+                              <p>
+                                Are you sure you really want to do this? You'll
+                                lose everything and it{" "}
+                                <span className="underline animate-pulse">
+                                  CANNOT
+                                </span>{" "}
+                                be recovered...
+                              </p>
+                            </ModalBody>
+                            <ModalFooter>
+                              <Button
+                                onPress={onClose}
+                                variant="bordered"
+                                color="primary"
+                              >
+                                I don't want to anymore!
+                              </Button>
+                              <Button
+                                onPress={deleteAccount}
+                                variant="bordered"
+                                color="danger"
+                              >
+                                Get me outta here!
+                              </Button>
+                            </ModalFooter>
+                          </>
+                        )}
+                      </ModalContent>
+                    </Modal>
                   </div>
                 </div>
               </div>
