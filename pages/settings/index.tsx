@@ -1,4 +1,5 @@
 import Sidebar from "@/components/Feed Page/Sidebar/Sidebar";
+import { doSignInWithEmailAndPassword } from "@/utils/firebase/ConfigFunctions";
 import { auth, db } from "@/utils/firebase/Firebase";
 import {
   addToast,
@@ -10,6 +11,7 @@ import {
   Input,
 } from "@heroui/react";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { updateEmail } from "firebase/auth";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
@@ -35,9 +37,6 @@ const Settings = () => {
             setUserInformation((prevState) => ({
               ...prevState,
               fullName: userData.fullName,
-              /**
-               * @IMPORTANT: When going to import pfp, convert to base64 then attatch "data:image/jpeg;base64,/" :)) thank me later
-               */
               profilePicture: userData.profilePicture || "",
               uid: user.uid,
             }));
@@ -47,10 +46,9 @@ const Settings = () => {
         router.push("/");
       }
     });
-  }, []);
+  }, [router]);
 
   const handlePhotoChange = (e: any) => {
-    // let us first check if it is a png or not
     const file = e.target.files?.[0];
     if (file && file.type !== "image/png") {
       addToast({
@@ -60,7 +58,6 @@ const Settings = () => {
         timeout: 3000,
         shouldShowTimeoutProgess: true,
       });
-      // flush input
       e.target.value = "";
     } else if (file) {
       const reader = new FileReader();
@@ -74,6 +71,7 @@ const Settings = () => {
       reader.readAsDataURL(file);
     }
   };
+
   const changeProfilePicture = () => {
     if (!userInformation.uid) {
       addToast({
@@ -112,12 +110,14 @@ const Settings = () => {
       }
     });
   };
+
   const handleFullNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUserInformation((prevState) => ({
       ...prevState,
       fullName: e.target.value,
     }));
-  }
+  };
+
   const updateFullName = () => {
     if (!userInformation.uid) {
       addToast({
@@ -155,7 +155,88 @@ const Settings = () => {
           });
       }
     });
-  }
+  };
+
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setUserInformation((prevState) => ({
+      ...prevState,
+      email: e.target.value,
+    }));
+  };
+
+  const updateEmailInfo = () => {
+    if (!userInformation.uid) {
+      addToast({
+        title: "Error",
+        description: "User ID is missing!",
+        hideIcon: true,
+        timeout: 3000,
+        shouldShowTimeoutProgess: true,
+      });
+      return;
+    }
+
+    getDoc(doc(db, "users", userInformation.uid))
+      .then((docSnap) => {
+        if (docSnap.exists()) {
+          return updateDoc(docSnap.ref, {
+            email: userInformation.email,
+          });
+        }
+      })
+      .then(() => {
+        addToast({
+          title: "Success",
+          description: "Email updated successfully!",
+          hideIcon: true,
+          timeout: 3000,
+          shouldShowTimeoutProgess: true,
+        });
+
+        const password = prompt(
+          "Please enter your password to re-authenticate:"
+        );
+        if (!password) {
+          addToast({
+            title: "Error",
+            description: "Password is required to update email!",
+            hideIcon: true,
+            timeout: 3000,
+            shouldShowTimeoutProgess: true,
+          });
+          return;
+        }
+
+        userInformation.password = password;
+        return doSignInWithEmailAndPassword(
+          auth.currentUser?.email || "",
+          userInformation.password
+        );
+      })
+      .then((userCreds) => {
+        if (userCreds) {
+          return updateEmail(userCreds.user, userInformation.email);
+        }
+      })
+      .then(() => {
+        addToast({
+          title: "Success",
+          description: "Authentication email updated successfully!",
+          hideIcon: true,
+          timeout: 3000,
+          shouldShowTimeoutProgess: true,
+        });
+      })
+      .catch((error) => {
+        addToast({
+          title: "Error",
+          description: `Failed to update email: ${error.message}`,
+          hideIcon: true,
+          timeout: 3000,
+          shouldShowTimeoutProgess: true,
+        });
+      });
+  };
 
   return (
     <>
@@ -213,29 +294,56 @@ const Settings = () => {
                       </div>
                     </div>
                   </div>
-                    <div className="grid grid-cols-2 items-center mt-10">
-                      <h1 className="text-2xl font-semibold text-gray-800">Change Your Full Name:</h1>
-                      <div className="grid grid-cols-2 gap-4 items-center">
-                        <div className="col-span-1">
-                          <Input
-                            variant="underlined"
-                            label="Full Name"
-                            color="primary"
-                            value={userInformation.fullName}
-                            onChange={handleFullNameChange}
-                          />
-                        </div>
-                        <div className="col-span-1 mt-5">
-                          <Button
-                            variant="bordered"
-                            color="primary"
-                            onPress={updateFullName}
-                          >
-                            Update Full Name
-                          </Button>
-                        </div>
+                  <div className="grid grid-cols-2 items-center mt-10">
+                    <h1 className="text-2xl font-semibold text-gray-800">
+                      Change Your Email:
+                    </h1>
+                    <div className="grid grid-cols-2 gap-4 items-center">
+                      <div className="col-span-1">
+                        <Input
+                          variant="underlined"
+                          label="Full Name"
+                          color="primary"
+                          value={userInformation.fullName}
+                          onChange={handleFullNameChange}
+                        />
+                      </div>
+                      <div className="col-span-1 mt-5">
+                        <Button
+                          variant="bordered"
+                          color="primary"
+                          onPress={updateFullName}
+                        >
+                          Update Full Name
+                        </Button>
                       </div>
                     </div>
+                  </div>
+                  <div className="grid grid-cols-2 items-center mt-10">
+                    <h1 className="text-2xl font-semibold text-gray-800">
+                      Change Your Full Name:
+                    </h1>
+                    <div className="grid grid-cols-2 gap-4 items-center">
+                      <div className="col-span-1">
+                        <Input
+                          variant="underlined"
+                          label="Email"
+                          color="primary"
+                          value={userInformation.email}
+                          onChange={handleEmailChange}
+                        />
+                      </div>
+                      <div className="col-span-1 mt-5">
+                        <Button
+                          variant="bordered"
+                          color="primary"
+                          onPress={updateEmailInfo}
+                        >
+                          Update Full Name
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </CardBody>
