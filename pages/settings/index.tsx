@@ -11,7 +11,7 @@ import {
   Input,
 } from "@heroui/react";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
-import { updateEmail } from "firebase/auth";
+import { updateEmail, updatePassword } from "firebase/auth";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
@@ -238,6 +238,84 @@ const Settings = () => {
       });
   };
 
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setUserInformation((prevState) => ({
+      ...prevState,
+      password: e.target.value,
+    }));
+  };
+  const updatePasswordChange = () => {
+    if (!userInformation.uid) {
+      addToast({
+        title: "Error",
+        description: "User ID is missing!",
+        hideIcon: true,
+        timeout: 3000,
+        shouldShowTimeoutProgess: true,
+      });
+      return;
+    }
+    getDoc(doc(db, "users", userInformation.uid)).then((docSnap) => {
+      if (docSnap.exists()) {
+        return updateDoc(docSnap.ref, {
+          password: userInformation.password,
+        })
+        .then(() => {
+          addToast({
+            title: "Success",
+            description: "Password updated successfully!",
+            hideIcon: true,
+            timeout: 3000,
+            shouldShowTimeoutProgess: true,
+          });
+  
+          const password = prompt(
+            "Please enter your password to re-authenticate:"
+          );
+          if (!password) {
+            addToast({
+              title: "Error",
+              description: "Invalid",
+              hideIcon: true,
+              timeout: 3000,
+              shouldShowTimeoutProgess: true,
+            });
+            return;
+          }
+  
+          userInformation.password = password;
+          return doSignInWithEmailAndPassword(
+            auth.currentUser?.email || "",
+            userInformation.password
+          );
+        })
+        .then((userCreds) => {
+          if (userCreds) {
+            return updatePassword(userCreds.user, userInformation.email);
+          }
+        })
+        .then(() => {
+          addToast({
+            title: "Success",
+            description: "Authentication password updated successfully!",
+            hideIcon: true,
+            timeout: 3000,
+            shouldShowTimeoutProgess: true,
+          });
+        })
+        .catch((error) => {
+          addToast({
+            title: "Error",
+            description: `Failed to update password: ${error.message}`,
+            hideIcon: true,
+            timeout: 3000,
+            shouldShowTimeoutProgess: true,
+          });
+        });
+      }
+    });
+  };
+
   return (
     <>
       <div className="grid grid-cols-5 py-20 px-20">
@@ -340,6 +418,31 @@ const Settings = () => {
                           onPress={updateEmailInfo}
                         >
                           Update Email
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 items-center mt-10">
+                    <h1 className="text-2xl font-semibold text-gray-800">
+                      Change Your Password:
+                    </h1>
+                    <div className="grid grid-cols-2 gap-4 items-center">
+                      <div className="col-span-1">
+                        <Input
+                          variant="underlined"
+                          label="Password"
+                          color="primary"
+                          value={userInformation.password}
+                          onChange={handlePasswordChange}
+                        />
+                      </div>
+                      <div className="col-span-1 mt-5">
+                        <Button
+                          variant="bordered"
+                          color="primary"
+                          onPress={updatePasswordChange}
+                        >
+                          Update Password
                         </Button>
                       </div>
                     </div>
