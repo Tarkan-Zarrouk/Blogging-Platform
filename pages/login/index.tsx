@@ -106,26 +106,6 @@ const LoginPage: React.FC = () => {
     }
   };
 
-  // const handlePasswordValidation = (
-  //   e: React.KeyboardEvent<HTMLInputElement>
-  // ) => {
-  //   let passwordValue = (e.target as HTMLInputElement).value;
-  //   if (passwordValue.length < 8) {
-  //     setErrorState({
-  //       ...errorState,
-  //       passwordErrorMessage:
-  //         "Please enter a password that is greater than 8 characters in length!",
-  //       passwordErrorBool: true,
-  //     });
-  //   } else {
-  //     setErrorState({
-  //       ...errorState,
-  //       passwordErrorMessage: "",
-  //       passwordErrorBool: false,
-  //     });
-  //   }
-  // };
-
   return (
     <>
       <div className="flex flex-col items-center justify-center min-h-screen">

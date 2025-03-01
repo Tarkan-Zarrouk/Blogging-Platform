@@ -51,7 +51,6 @@ export const UserComponent: React.FC = () => {
       }
     });
   }, []);
-  console.log(userInformation);
   return (
     <>
       <div className="flex justify-center">
