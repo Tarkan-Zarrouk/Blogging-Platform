@@ -15,8 +15,8 @@ import { doc, setDoc } from "firebase/firestore";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
-import EyeClosedIcon from "@/components/icons/EyeClosedIcon";
-import EyeOpenIcon from "@/components/icons/EyeOpenIcon";
+import EyeClosedIcon from "@/components/icons/PasswordIcons/EyeClosedIcon";
+import EyeOpenIcon from "@/components/icons/PasswordIcons/EyeOpenIcon";
 
 const Register: React.FC = () => {
   const [userInformation, setUserInformation] = useState<UserInformation>({
@@ -169,6 +169,19 @@ const Register: React.FC = () => {
           fullName: userInformation.fullName,
           tosAcceptance: userInformation.termsAccepted,
           profilePicture: "",
+          description: "",
+          pronouns: "",
+          followers: [],
+          following: [],
+          likes: [],
+          posts: [],
+          numberOfFollowers: 0,
+          numberOfFollowing: 0,
+          numberOfLikes: 0,
+          numberOfPosts: 0,
+          gender: "",
+          sexualIdentity: "",
+          createdAt: new Date().toISOString(),
         }).then(() => {
           setLoading(false);
           router.push("/login?registered=true");

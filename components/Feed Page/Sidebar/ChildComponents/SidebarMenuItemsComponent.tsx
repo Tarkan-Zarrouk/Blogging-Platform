@@ -37,17 +37,6 @@ export const SidebarMenuItemsComponent = () => {
         variant="light"
         startContent={
           <>
-            <CreatePostIcon />
-          </>
-        }
-      >
-        Create Post
-      </Button>
-      <Button
-        className="w-full font-bold text-xl flex justify-between hover:-translate-y-1"
-        variant="light"
-        startContent={
-          <>
             <BookmarksIcon />
           </>
         }

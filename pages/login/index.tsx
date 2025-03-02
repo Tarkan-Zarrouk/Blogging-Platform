@@ -12,8 +12,8 @@ import {
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
-import EyeOpenIcon from "@/components/icons/EyeOpenIcon";
-import EyeClosedIcon from "@/components/icons/EyeClosedIcon";
+import EyeOpenIcon from "@/components/icons/PasswordIcons/EyeOpenIcon";
+import EyeClosedIcon from "@/components/icons/PasswordIcons/EyeClosedIcon";
 
 const LoginPage: React.FC = () => {
   const [userInformation, setUserInformation] = useState<LoginUserInformation>({

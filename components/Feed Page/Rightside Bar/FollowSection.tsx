@@ -1,6 +1,6 @@
 import { auth, db } from "@/utils/firebase/Firebase";
 import { Card, CardBody, CardHeader, User } from "@heroui/react";
-import { collection, doc, getDoc, getDocs } from "firebase/firestore";
+import { collection, getDocs } from "firebase/firestore";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
@@ -41,6 +41,7 @@ const FollowSection: React.FC = () => {
                   <Link href={"main/" + user.fullName + "/profile"}>
                     <User
                       name={user.fullName}
+                      description="Click to check them out."
                       avatarProps={{
                         src: user.profilePicture,
                         alt: user.name,

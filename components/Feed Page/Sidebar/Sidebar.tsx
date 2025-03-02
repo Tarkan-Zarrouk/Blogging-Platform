@@ -1,27 +1,10 @@
-import SettingsIcon from "@/components/icons/SettingsIcon";
-import { BookmarksIcon } from "@/components/icons/SidebarIcons/BookmarksIcon";
-import { CreatePostIcon } from "@/components/icons/SidebarIcons/CreatePostIcon";
-import { ExploreIcon } from "@/components/icons/SidebarIcons/ExploreIcon";
-import { HomeIcon } from "@/components/icons/SidebarIcons/HomeIcon";
-import SignOutIcon from "@/components/icons/SignOutIcon";
-import ProfileIcon from "@/components/icons/UserIcon";
-import { doSignOut } from "@/utils/firebase/ConfigFunctions";
 import {
   Button,
   Card,
   CardBody,
   CardFooter,
   CardHeader,
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
   useDisclosure,
-  User,
 } from "@heroui/react";
 import { useRouter } from "next/router";
 import { UserComponent } from "./ChildComponents/UserComponent";

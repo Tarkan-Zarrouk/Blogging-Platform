@@ -18,6 +18,7 @@ import {
   User,
 } from "@heroui/react";
 import { doc, getDoc } from "firebase/firestore";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
@@ -69,14 +70,16 @@ export const UserComponent: React.FC = () => {
           </PopoverTrigger>
           <PopoverContent>
             <div className="flex flex-col">
-              <Button
-                className="gap-x-7 self-center w-full text-end"
-                startContent={<ProfileIcon />}
-                variant="light"
-                style={{ justifyContent: "flex-start" }}
-              >
-                Profile
-              </Button>
+              <Link href={`/main/${userInformation.fullName}/profile`}>
+                <Button
+                  className="gap-x-7 self-center w-full text-end"
+                  startContent={<ProfileIcon />}
+                  variant="light"
+                  style={{ justifyContent: "flex-start" }}
+                >
+                  Profile
+                </Button>
+              </Link>
               <Button
                 className="gap-x-5 self-center w-full text-end"
                 startContent={<SettingsIcon />}
