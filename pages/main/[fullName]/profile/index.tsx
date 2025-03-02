@@ -130,7 +130,7 @@ const ProfileContent: React.FC = () => {
                             onChange={(e) =>
                               setUserInformation({
                                 ...userInformation,
-                                pronouns: e.target.valueﬁ,
+                                pronouns: e.target.value,
                               })
                             }
                             placeholder="Pronouns here :3"
