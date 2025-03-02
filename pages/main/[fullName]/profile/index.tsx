@@ -5,7 +5,6 @@ import { DeletePostIcon } from "@/components/icons/PostIcons/PostSpecificIcons/D
 import { EditPostIcon } from "@/components/icons/PostIcons/PostSpecificIcons/EditPostIcon";
 import { HeartIcon } from "@/components/icons/PostIcons/PostSpecificIcons/HeartIcon";
 import SettingsIcon from "@/components/icons/SettingsIcon";
-import ThreeDotsMenuIcon from "@/components/icons/ThreeDotsMenuIcon";
 import { auth, db } from "@/utils/firebase/Firebase";
 import { ProfileInfo } from "@/utils/types/Types";
 import {
@@ -21,9 +20,7 @@ import {
   Tooltip,
   User,
 } from "@heroui/react";
-import { converBase64ToImage } from "convert-base64-to-image";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
@@ -73,6 +70,7 @@ const ProfileContent: React.FC = () => {
               numberOfPosts: docSnap.data().posts.length,
               uid: docSnap.data().uid,
               sexualIdentity: docSnap.data().sexualIdentity,
+              gender: docSnap.data().gender,
             }));
           }
         });
@@ -91,6 +89,7 @@ const ProfileContent: React.FC = () => {
       const userDocRef = doc(db, "users", user.uid);
       updateDoc(userDocRef, {
         pronouns: userInformation.pronouns,
+        gender: userInformation.gender,
         sexualIdentity: userInformation.sexualIdentity,
         description: userInformation.description,
       })
@@ -119,7 +118,6 @@ const ProfileContent: React.FC = () => {
         });
     }
   };
-  // const base64 =
 
   return (
     <>
@@ -162,6 +160,18 @@ const ProfileContent: React.FC = () => {
                               onChange={(e) =>
                                 setUserInformation({
                                   ...userInformation,
+                                  gender: e.target.value,
+                                })
+                              }
+                              placeholder="Gender here :>"
+                              size="sm"
+                              variant="bordered"
+                              color="primary"
+                            />
+                            <Input
+                              onChange={(e) =>
+                                setUserInformation({
+                                  ...userInformation,
                                   sexualIdentity: e.target.value,
                                 })
                               }
@@ -186,6 +196,10 @@ const ProfileContent: React.FC = () => {
                               Pronouns:{" "}
                               {userInformation.pronouns ||
                                 "Click 'Edit Profile' to change it :)"}
+                            </div>
+                            <div className="grid col-span1">
+                              Gender:{" "}
+                              {userInformation.gender || "Not specified"}
                             </div>
                             <div className="grid col-span-1">
                               Sexuality:{" "}
@@ -317,7 +331,7 @@ const ProfileContent: React.FC = () => {
                                   </Button>
                                 </PopoverTrigger>
                                 <PopoverContent>
-                                    <div className="flex flex-col gap-y-2">
+                                  <div className="flex flex-col gap-y-2">
                                     <Button
                                       variant="light"
                                       color="primary"
@@ -334,7 +348,7 @@ const ProfileContent: React.FC = () => {
                                     >
                                       Delete Post
                                     </Button>
-                                    </div>
+                                  </div>
                                 </PopoverContent>
                               </Popover>
                             </CardBody>
