@@ -75,6 +75,7 @@ const ProfileContent: React.FC = () => {
       const userDocRef = doc(db, "users", user.uid);
       updateDoc(userDocRef, {
         pronouns: userInformation.pronouns,
+        sexualIdentity: userInformation.sexualIdentity,
         description: userInformation.description,
       })
         .then(() => {
@@ -126,30 +127,59 @@ const ProfileContent: React.FC = () => {
                       }
                       description={
                         modifyProfile ? (
-                          <Input
-                            onChange={(e) =>
-                              setUserInformation({
-                                ...userInformation,
-                                pronouns: e.target.value,
-                              })
-                            }
-                            placeholder="Pronouns here :3"
-                            size="sm"
-                            variant="bordered"
-                            color="primary"
-                            endContent={
-                              <Button
-                                variant="bordered"
-                                color="primary"
-                                size="sm"
-                                onPress={editProfile}
-                              >
-                                Update
-                              </Button>
-                            }
-                          />
+                          <>
+                            <Input
+                              onChange={(e) =>
+                                setUserInformation({
+                                  ...userInformation,
+                                  pronouns: e.target.value,
+                                })
+                              }
+                              placeholder="Pronouns here :3"
+                              size="sm"
+                              variant="bordered"
+                              color="primary"
+                              endContent={
+                                <Button
+                                  variant="bordered"
+                                  color="primary"
+                                  size="sm"
+                                  onPress={editProfile}
+                                >
+                                  Update
+                                </Button>
+                              }
+                            />
+                            <Input
+                              onChange={(e) =>
+                                setUserInformation({
+                                  ...userInformation,
+                                  sexualIdentity: e.target.value,
+                                })
+                              }
+                              placeholder="Sexuality here :>"
+                              size="sm"
+                              variant="bordered"
+                              color="primary"
+                              endContent={
+                                <Button
+                                  variant="bordered"
+                                  color="primary"
+                                  size="sm"
+                                  onPress={editProfile}
+                                >
+                                  Update
+                                </Button>
+                              }
+                            />
+                          </>
                         ) : (
-                          userInformation.pronouns
+                          <div className="grid grid-cols-1">
+                            <div className="grid col-span-1">
+                              Pronouns: {userInformation.pronouns || "Click Edit Profile to change it :)"}
+                            </div>
+                            <div className="grid col-span-1">Sexuality: {userInformation.sexualIdentity}</div>
+                          </div>
                         )
                       }
                       avatarProps={{
