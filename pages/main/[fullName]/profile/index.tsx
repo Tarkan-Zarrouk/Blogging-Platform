@@ -19,7 +19,7 @@ import { useEffect, useState } from "react";
 const ProfileContent: React.FC = () => {
   const router = useRouter();
   const [loading, setLoading] = useState<boolean>(false);
-  const [changeDescription, setChangeDescription] = useState<boolean>(false);
+  const [modifyProfile, setmodifyProfile] = useState<boolean>(false);
   const [userInformation, setUserInformation] = useState<ProfileInfo>({
     email: "",
     fullName: "",
@@ -68,23 +68,38 @@ const ProfileContent: React.FC = () => {
       }
     });
   }, []);
-  const setNewDescription = async () => {
-    setLoading(true)
+  const editProfile = () => {
+    setLoading(true);
     const user = auth.currentUser;
     if (user) {
       const userDocRef = doc(db, "users", user.uid);
-      console.log(userInformation.description);
-      await updateDoc(userDocRef, { description: userInformation.description });
-      setLoading(false)
-      addToast({
-        title: "Posted!",
-        color: "primary",
-        description: "You have successfully posted on Nexus!",
-        hideIcon: true,
-        timeout: 3000,
-        shouldShowTimeoutProgess: true,
-      });
-      setChangeDescription(false);
+      updateDoc(userDocRef, {
+        pronouns: userInformation.pronouns,
+        description: userInformation.description,
+      })
+        .then(() => {
+          setLoading(false);
+          addToast({
+            title: "Updated!",
+            color: "primary",
+            description: "Your description has been successfully updated!",
+            hideIcon: true,
+            timeout: 3000,
+            shouldShowTimeoutProgess: true,
+          });
+          setmodifyProfile(false);
+        })
+        .catch((error) => {
+          setLoading(false);
+          addToast({
+            title: "Error!",
+            color: "danger",
+            description: `Failed to update description: ${error.message}`,
+            hideIcon: true,
+            timeout: 3000,
+            shouldShowTimeoutProgess: true,
+          });
+        });
     }
   };
   return (
@@ -108,6 +123,34 @@ const ProfileContent: React.FC = () => {
                         <span className="text-2xl font-bold underline">
                           {userInformation.fullName}
                         </span>
+                      }
+                      description={
+                        modifyProfile ? (
+                          <Input
+                            onChange={(e) =>
+                              setUserInformation({
+                                ...userInformation,
+                                pronouns: e.target.valueﬁ,
+                              })
+                            }
+                            placeholder="Pronouns here :3"
+                            size="sm"
+                            variant="bordered"
+                            color="primary"
+                            endContent={
+                              <Button
+                                variant="bordered"
+                                color="primary"
+                                size="sm"
+                                onPress={editProfile}
+                              >
+                                Update
+                              </Button>
+                            }
+                          />
+                        ) : (
+                          userInformation.pronouns
+                        )
                       }
                       avatarProps={{
                         src: userInformation.profilePicture,
@@ -134,12 +177,23 @@ const ProfileContent: React.FC = () => {
             </CardHeader>
             <CardBody>
               <div className="flex flex-col mb-5">
-                {changeDescription ? (
+                {modifyProfile ? (
                   <>
                     <Input
                       variant="bordered"
                       color="primary"
                       value={userInformation.description}
+                      endContent={
+                        <Button
+                          onPress={editProfile}
+                          variant="bordered"
+                          size="sm"
+                          color="primary"
+                          isLoading={loading}
+                        >
+                          Edit Profile
+                        </Button>
+                      }
                       onChange={(e) =>
                         setUserInformation({
                           ...userInformation,
@@ -147,14 +201,6 @@ const ProfileContent: React.FC = () => {
                         })
                       }
                     />
-                    <Button
-                      onPress={setNewDescription}
-                      variant="bordered"
-                      size="sm"
-                      color="primary"
-                    >
-                      Change Description
-                    </Button>
                   </>
                 ) : (
                   userInformation.description
@@ -162,11 +208,11 @@ const ProfileContent: React.FC = () => {
               </div>
               <div className="grid grid-cols-2">
                 <Button
-                  onPress={() => setChangeDescription(!changeDescription)}
+                  onPress={() => setmodifyProfile(!modifyProfile)}
                   variant="bordered"
                   color="primary"
                 >
-                  Edit Description
+                  Edit Profile
                 </Button>
                 <div className="grid col-span-1">
                   <Button variant="bordered" color="primary">
