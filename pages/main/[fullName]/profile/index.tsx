@@ -1,5 +1,11 @@
 import FollowSection from "@/components/Feed Page/Rightside Bar/FollowSection";
 import Sidebar from "@/components/Feed Page/Sidebar/Sidebar";
+import { CommentIcon } from "@/components/icons/PostIcons/PostSpecificIcons/CommentIcon";
+import { DeletePostIcon } from "@/components/icons/PostIcons/PostSpecificIcons/DeletePostIcon";
+import { EditPostIcon } from "@/components/icons/PostIcons/PostSpecificIcons/EditPostIcon";
+import { HeartIcon } from "@/components/icons/PostIcons/PostSpecificIcons/HeartIcon";
+import SettingsIcon from "@/components/icons/SettingsIcon";
+import ThreeDotsMenuIcon from "@/components/icons/ThreeDotsMenuIcon";
 import { auth, db } from "@/utils/firebase/Firebase";
 import { ProfileInfo } from "@/utils/types/Types";
 import {
@@ -9,17 +15,23 @@ import {
   CardBody,
   CardHeader,
   Input,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
   Tooltip,
   User,
 } from "@heroui/react";
-import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
+import { converBase64ToImage } from "convert-base64-to-image";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
+import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
 const ProfileContent: React.FC = () => {
   const router = useRouter();
   const [loading, setLoading] = useState<boolean>(false);
-  const [modifyProfile, setmodifyProfile] = useState<boolean>(false);
+  const [modifyProfile, setModifyProfile] = useState<boolean>(false);
   const [userInformation, setUserInformation] = useState<ProfileInfo>({
     email: "",
     fullName: "",
@@ -38,12 +50,12 @@ const ProfileContent: React.FC = () => {
     sexualIdentity: "",
     uid: "",
   });
+
   useEffect(() => {
-    auth.onAuthStateChanged((user) => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
       if (user) {
         getDoc(doc(db, "users", user.uid)).then((docSnap) => {
           if (docSnap.exists()) {
-            // console.log(docSnap.data().fullName);
             setUserInformation((prevState) => ({
               ...prevState,
               profilePicture: docSnap.data().profilePicture,
@@ -60,6 +72,7 @@ const ProfileContent: React.FC = () => {
               numberOfLikes: docSnap.data().likes.length,
               numberOfPosts: docSnap.data().posts.length,
               uid: docSnap.data().uid,
+              sexualIdentity: docSnap.data().sexualIdentity,
             }));
           }
         });
@@ -67,7 +80,10 @@ const ProfileContent: React.FC = () => {
         router.push("/login");
       }
     });
-  }, []);
+
+    return () => unsubscribe();
+  }, [router]);
+
   const editProfile = () => {
     setLoading(true);
     const user = auth.currentUser;
@@ -83,19 +99,19 @@ const ProfileContent: React.FC = () => {
           addToast({
             title: "Updated!",
             color: "primary",
-            description: "Your description has been successfully updated!",
+            description: "Your profile has been successfully updated!",
             hideIcon: true,
             timeout: 3000,
             shouldShowTimeoutProgess: true,
           });
-          setmodifyProfile(false);
+          setModifyProfile(false);
         })
         .catch((error) => {
           setLoading(false);
           addToast({
             title: "Error!",
             color: "danger",
-            description: `Failed to update description: ${error.message}`,
+            description: `Failed to update profile: ${error.message}`,
             hideIcon: true,
             timeout: 3000,
             shouldShowTimeoutProgess: true,
@@ -103,6 +119,8 @@ const ProfileContent: React.FC = () => {
         });
     }
   };
+  // const base64 =
+
   return (
     <>
       <div className="grid grid-cols-5 py-20 px-20">
@@ -115,8 +133,8 @@ const ProfileContent: React.FC = () => {
               <div className="grid grid-cols-2">
                 <div className="grid col-span-1">
                   <Tooltip
-                    content="Note: You can change your information in settings :)"
-                    color="primary"
+                    content="Note: You can only change the following in settings: Profile Picture, Full Name :("
+                    color="warning"
                     showArrow
                   >
                     <User
@@ -139,16 +157,6 @@ const ProfileContent: React.FC = () => {
                               size="sm"
                               variant="bordered"
                               color="primary"
-                              endContent={
-                                <Button
-                                  variant="bordered"
-                                  color="primary"
-                                  size="sm"
-                                  onPress={editProfile}
-                                >
-                                  Update
-                                </Button>
-                              }
                             />
                             <Input
                               onChange={(e) =>
@@ -161,24 +169,29 @@ const ProfileContent: React.FC = () => {
                               size="sm"
                               variant="bordered"
                               color="primary"
-                              endContent={
-                                <Button
-                                  variant="bordered"
-                                  color="primary"
-                                  size="sm"
-                                  onPress={editProfile}
-                                >
-                                  Update
-                                </Button>
-                              }
                             />
+                            <Button
+                              variant="bordered"
+                              color="primary"
+                              size="sm"
+                              onPress={editProfile}
+                              isLoading={loading}
+                            >
+                              Update
+                            </Button>
                           </>
                         ) : (
                           <div className="grid grid-cols-1">
                             <div className="grid col-span-1">
-                              Pronouns: {userInformation.pronouns || "Click Edit Profile to change it :)"}
+                              Pronouns:{" "}
+                              {userInformation.pronouns ||
+                                "Click 'Edit Profile' to change it :)"}
                             </div>
-                            <div className="grid col-span-1">Sexuality: {userInformation.sexualIdentity}</div>
+                            <div className="grid col-span-1">
+                              Sexuality:{" "}
+                              {userInformation.sexualIdentity ||
+                                "Not specified"}
+                            </div>
                           </div>
                         )
                       }
@@ -213,17 +226,6 @@ const ProfileContent: React.FC = () => {
                       variant="bordered"
                       color="primary"
                       value={userInformation.description}
-                      endContent={
-                        <Button
-                          onPress={editProfile}
-                          variant="bordered"
-                          size="sm"
-                          color="primary"
-                          isLoading={loading}
-                        >
-                          Edit Profile
-                        </Button>
-                      }
                       onChange={(e) =>
                         setUserInformation({
                           ...userInformation,
@@ -238,7 +240,7 @@ const ProfileContent: React.FC = () => {
               </div>
               <div className="grid grid-cols-2">
                 <Button
-                  onPress={() => setmodifyProfile(!modifyProfile)}
+                  onPress={() => setModifyProfile(!modifyProfile)}
                   variant="bordered"
                   color="primary"
                 >
@@ -248,6 +250,99 @@ const ProfileContent: React.FC = () => {
                   <Button variant="bordered" color="primary">
                     Share Profile
                   </Button>
+                </div>
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold underline mt-5 text-center">
+                  Posts
+                </h1>
+                <div className="grid grid-cols-3 gap-x-5">
+                  {userInformation.posts.map((post, id) => {
+                    console.log(post); // Log the post data to verify its format
+
+                    // Extract the base64 image data from the post string
+                    const base64Data = post.split(",").pop();
+                    const imageSrc = `data:image/png;base64,${base64Data}`;
+
+                    return (
+                      <Tooltip content="Visit Post?" showArrow>
+                        <Link
+                          href={
+                            "/main/" +
+                            userInformation.fullName +
+                            "/profile/" +
+                            id
+                          }
+                        >
+                          <Card
+                            key={id}
+                            className="hover:-translate-y-1 flex items-center justify-center"
+                          >
+                            <CardHeader>
+                              <img
+                                src={imageSrc}
+                                alt={`Post ${id}`}
+                                className=" hover:cursor-pointer"
+                              />
+                            </CardHeader>
+                            <CardBody className="flex flex-row gap-x-5 justify-center">
+                              <Button
+                                variant="light"
+                                onClick={(e: React.MouseEvent) =>
+                                  e.preventDefault()
+                                }
+                                isIconOnly
+                              >
+                                <HeartIcon />
+                              </Button>
+                              <Button
+                                variant="light"
+                                onClick={(e: React.MouseEvent) =>
+                                  e.preventDefault()
+                                }
+                                isIconOnly
+                              >
+                                <CommentIcon />
+                              </Button>
+                              <Popover placement="bottom">
+                                <PopoverTrigger>
+                                  <Button
+                                    variant="light"
+                                    onClick={(e: React.MouseEvent) =>
+                                      e.preventDefault()
+                                    }
+                                    isIconOnly
+                                  >
+                                    <SettingsIcon />
+                                  </Button>
+                                </PopoverTrigger>
+                                <PopoverContent>
+                                    <div className="flex flex-col gap-y-2">
+                                    <Button
+                                      variant="light"
+                                      color="primary"
+                                      startContent={<EditPostIcon />}
+                                      className="justify-start"
+                                    >
+                                      Edit Post
+                                    </Button>
+                                    <Button
+                                      startContent={<DeletePostIcon />}
+                                      variant="light"
+                                      color="danger"
+                                      className="justify-start"
+                                    >
+                                      Delete Post
+                                    </Button>
+                                    </div>
+                                </PopoverContent>
+                              </Popover>
+                            </CardBody>
+                          </Card>
+                        </Link>
+                      </Tooltip>
+                    );
+                  })}
                 </div>
               </div>
             </CardBody>
@@ -260,4 +355,5 @@ const ProfileContent: React.FC = () => {
     </>
   );
 };
+
 export default ProfileContent;

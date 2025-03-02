@@ -34,7 +34,10 @@ const ContentFeed: React.FC = () => {
       console.log("A");
       const reader = new FileReader();
       reader.onloadend = () => {
-        console.log("File reading completed", reader.result?.toString().substring(0, 50) + "...");
+        console.log(
+          "File reading completed",
+          reader.result?.toString().substring(0, 50) + "..."
+        );
         const base64String = reader.result as string;
         setContent((prevContent) => ({
           ...prevContent,
@@ -48,43 +51,61 @@ const ContentFeed: React.FC = () => {
   };
 
   const handlePost = () => {
-    getDoc(doc(db, "users", content.uid)).then((docSnap) => {
-      if (docSnap.exists()) {
-        const postsCollectionRef = collection(
-          db,
-          "users",
-          content.uid,
-          "posts"
-        );
-        const timestamp = new Date().toISOString();
-        const postDocRef = doc(postsCollectionRef, `post_${timestamp}`);
-        setDoc(postDocRef, {
-          text: content.text,
-          attachment: content.attachment,
-          createdAt: timestamp,
-        })
-          .then(() => {
-            addToast({
-              title: "Posted!",
-              color: "primary",
-              description: "You have successfully posted on Nexus!",
-              hideIcon: true,
-              timeout: 3000,
-              shouldShowTimeoutProgess: true,
+    if (content.text === "" && content.attachment === "") {
+      addToast({
+        title: "Error",
+        description: "You cannot post an empty post.",
+        color: "danger",
+      });
+      return;
+    } else if (content.text.length > 500) {
+      addToast({
+        title: "Error",
+        description: "Your post cannot exceed 500 characters.",
+        color: "danger",
+      });
+      return;
+    }
+    // Add post to users/userId --> field "posts" --> array of postIds
+    const postRef = collection(db, "posts");
+    addDoc(postRef, {
+      uid: content.uid,
+      text: content.text,
+      attachment: content.attachment,
+      likes: [],
+      comments: [],
+    })
+      .then((docRef) => {
+        const userRef = doc(db, "users", content.uid);
+        getDoc(userRef).then((userDoc) => {
+          if (userDoc.exists()) {
+            const userData = userDoc.data();
+            const updatedPosts = [
+              new Date() + ", " + content.text + ", " + content.attachment,
+            ];
+            if (userData.posts) {
+              updatedPosts.push(...userData.posts);
+            }
+            updateDoc(userRef, {
+              posts: updatedPosts,
             });
-          })
-          .catch((error) => {
-            addToast({
-              title: "Registration Unsuccessful",
-              color: "danger",
-              description: "Error: " + error + "!",
-              hideIcon: true,
-              timeout: 3000,
-              shouldShowTimeoutProgess: true,
-            });
-          });
-      }
-    });
+            console.log(userData.posts);
+          }
+        });
+        addToast({
+          title: "Post created",
+          description: "Your post has been created successfully.",
+          color: "primary",
+        });
+      })
+      .catch((error) => {
+        addToast({
+          title: "Error",
+          description:
+            "An error occurred while creating your post. Error: " + error,
+          color: "danger",
+        });
+      });
   };
 
   return (
@@ -94,9 +115,9 @@ const ContentFeed: React.FC = () => {
         color="primary"
         placeholder="What's on your mind today?"
         value={content.text}
-        onChange={(e) =>
-          setContent((prev) => ({ ...prev, text: e.target.value }))
-        }
+        onChange={(e) => {
+          setContent((prev) => ({ ...prev, text: e.target.value }));
+        }}
         endContent={
           isClient && (
             <div className="flex flex-row items-center gap-x-5">

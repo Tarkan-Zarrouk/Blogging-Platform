@@ -12,7 +12,7 @@ export type ProfileInfo = {
   followers: number[];
   following: number[];
   likes: number[];
-  posts: number[];
+  posts: string[];
   numberOfFollowers: number;
   numberOfFollowing: number;
   numberOfLikes: number;

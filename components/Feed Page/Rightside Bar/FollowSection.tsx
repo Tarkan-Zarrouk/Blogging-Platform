@@ -1,5 +1,12 @@
 import { auth, db } from "@/utils/firebase/Firebase";
-import { Card, CardBody, CardHeader, User } from "@heroui/react";
+import {
+  Button,
+  Card,
+  CardBody,
+  CardHeader,
+  Tooltip,
+  User,
+} from "@heroui/react";
 import { collection, getDocs } from "firebase/firestore";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -28,8 +35,9 @@ const FollowSection: React.FC = () => {
     <>
       <div className="px-5">
         <Card>
-          <CardHeader className="border-b-1.5">
+          <CardHeader className="border-b-1.5 flex flex-col items-baseline">
             <h4 className="text-lg font-bold">People to Follow:</h4>
+            <h2 className="text-md font-light">Click to check them out.</h2>
           </CardHeader>
           <CardBody>
             {users
@@ -38,10 +46,12 @@ const FollowSection: React.FC = () => {
               .filter((user) => user.uid)
               .map((user) => (
                 <div className="flex justify-start" key={user.uid}>
-                  <Link href={"main/" + user.fullName + "/profile"}>
+                  <Link
+                    className="transition-transform hover:-translate-y-1"
+                    href={"main/" + user.fullName + "/profile"}
+                  >
                     <User
                       name={user.fullName}
-                      description="Click to check them out."
                       avatarProps={{
                         src: user.profilePicture,
                         alt: user.name,
