@@ -18,5 +18,6 @@ export type ProfileInfo = {
   numberOfPosts: number;
   gender: string;
   sexualIdentity: string;
+  emailVerified: boolean,
   uid: string,
 };

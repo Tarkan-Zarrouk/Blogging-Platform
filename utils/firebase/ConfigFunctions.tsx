@@ -1,6 +1,7 @@
 import {
   createUserWithEmailAndPassword,
   deleteUser,
+  sendEmailVerification,
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
   signOut,
@@ -32,3 +33,7 @@ export const doDeleteUser = async (): Promise<void> => {
     await deleteUser(auth.currentUser);
   }
 };
+
+export const doSendVerificationEmail = async(user:any):Promise<void> => {
+  return sendEmailVerification(user)
+}

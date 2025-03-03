@@ -1,5 +1,8 @@
 import Sidebar from "@/components/Feed Page/Sidebar/Sidebar";
-import { doDeleteUser, doSignInWithEmailAndPassword } from "@/utils/firebase/ConfigFunctions";
+import {
+  doDeleteUser,
+  doSignInWithEmailAndPassword,
+} from "@/utils/firebase/ConfigFunctions";
 import { auth, db } from "@/utils/firebase/Firebase";
 import {
   addToast,
@@ -16,14 +19,19 @@ import {
   ModalHeader,
   useDisclosure,
 } from "@heroui/react";
-import { deleteDoc, doc, getDoc, updateDoc } from "firebase/firestore";
-import { updateEmail, updatePassword } from "firebase/auth";
+import { deleteDoc, doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
+import {
+  sendEmailVerification,
+  updateEmail,
+  updatePassword,
+} from "firebase/auth";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
 const Settings = () => {
   const router = useRouter();
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const [loading, setLoading] = useState<boolean>(false);
   const [userInformation, setUserInformation] = useState({
     fullName: "",
     profilePicture: "",
@@ -32,11 +40,25 @@ const Settings = () => {
     email: "",
     confirmPassword: "",
     termsAccepted: false,
+    verifyEmail: false,
   });
 
   useEffect(() => {
     auth.onAuthStateChanged((user) => {
       if (user) {
+        if (user.emailVerified) {
+          getDoc(doc(db, "users", user.uid)).then((docSnap) => {
+            if (docSnap.exists()) {
+              updateDoc(docSnap.ref, {
+                emailVerified: userInformation.verifyEmail
+              });
+            }
+          });
+          setUserInformation((prevState) => ({
+            ...prevState,
+            verifyEmail: true,
+          }));
+        }
         const docRef = doc(db, "users", user.uid);
         getDoc(docRef).then((docSnap) => {
           if (docSnap.exists()) {
@@ -334,12 +356,11 @@ const Settings = () => {
       });
       return;
     }
-    getDoc(doc(db, "users", userInformation.uid))
-      .then((docSnap) => {
-        if(docSnap.exists()) {
-            deleteDoc(docSnap.ref);
-        }
-      })
+    getDoc(doc(db, "users", userInformation.uid)).then((docSnap) => {
+      if (docSnap.exists()) {
+        deleteDoc(docSnap.ref);
+      }
+    });
     doSignInWithEmailAndPassword(auth.currentUser?.email || "", password)
       .then((userCreds) => {
         userCreds.user.delete();
@@ -363,7 +384,50 @@ const Settings = () => {
           shouldShowTimeoutProgess: true,
         });
       });
-  }
+  };
+
+  const verifyEmail = () => {
+    let user = auth.currentUser;
+    setLoading(true);
+    try {
+      if (user) {
+        sendEmailVerification(user)
+          .then(() => {
+            addToast({
+              title: "Success!",
+              description: "Successfully sent email!",
+              hideIcon: true,
+              timeout: 3000,
+              shouldShowTimeoutProgess: true,
+              variant: "solid",
+            });
+            window.location.reload;
+          })
+          .catch((e) => {
+            addToast({
+              title: "An error has occured!",
+              description: "We have failed to send the reset because: " + e,
+              hideIcon: true,
+              timeout: 3000,
+              shouldShowTimeoutProgess: true,
+            });
+          });
+        setLoading(false);
+      } else {
+        addToast({
+          title: "Error",
+          description: "No user is currently signed in!",
+          hideIcon: true,
+          timeout: 3000,
+          shouldShowTimeoutProgess: true,
+        });
+        setLoading(false);
+      }
+    } catch (e: any) {
+      alert(e);
+      setLoading(false);
+    }
+  };
 
   return (
     <>
@@ -492,6 +556,27 @@ const Settings = () => {
                           onPress={updatePasswordChange}
                         >
                           Update Password
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 items-center mt-10">
+                    <h1 className="text-2xl font-semibold text-gray-800">
+                      Verify your email:
+                    </h1>
+                    <div className="grid grid-cols-1 gap-4 items-center">
+                      <div className="col-span-1 mt-5">
+                        <Button
+                          isLoading={loading}
+                          isDisabled={userInformation.verifyEmail}
+                          className="w-full"
+                          variant="bordered"
+                          color="primary"
+                          onPress={verifyEmail}
+                        >
+                          {userInformation.verifyEmail
+                            ? "Email has been verified"
+                            : "Verify Email"}
                         </Button>
                       </div>
                     </div>

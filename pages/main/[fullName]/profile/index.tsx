@@ -44,6 +44,7 @@ const ProfileContent: React.FC = () => {
     numberOfPosts: 0,
     gender: "",
     sexualIdentity: "",
+    emailVerified: false,
     uid: "",
   });
 
@@ -69,6 +70,7 @@ const ProfileContent: React.FC = () => {
               numberOfPosts: docSnap.data().posts.length,
               uid: docSnap.data().uid,
               sexualIdentity: docSnap.data().sexualIdentity,
+              emailVerified: docSnap.data().emailVerified,
               gender: docSnap.data().gender,
             }));
           }
@@ -205,6 +207,16 @@ const ProfileContent: React.FC = () => {
                               {userInformation.sexualIdentity ||
                                 "Not specified"}
                             </div>
+                            <Tooltip
+                              content="We have this for security reasons :) You can change verify it in settings :)"
+                              placement="bottom"
+                              showArrow
+                            >
+                              <div className="grid col-span-1">
+                                Email Verified:{" "}
+                                {userInformation.emailVerified.toString()}
+                              </div>
+                            </Tooltip>
                           </div>
                         )
                       }
@@ -220,7 +232,10 @@ const ProfileContent: React.FC = () => {
               <div className="grid col-span-1 items-center ml-5">
                 <div className="flex flex-row gap-x-4">
                   <Tooltip
-                    content={"Total Likes: " + userInformation.numberOfLikes}
+                    content={
+                      "Total Likes on all posts: " +
+                      userInformation.numberOfLikes
+                    }
                   >
                     <p className="hover:underline hover:cursor-pointer text-gray-500">
                       {userInformation.numberOfPosts} Posts
@@ -264,9 +279,11 @@ const ProfileContent: React.FC = () => {
                   Edit Profile
                 </Button>
                 <div className="grid col-span-1">
-                  <Button variant="bordered" color="primary">
-                    Share Profile
-                  </Button>
+                  <Tooltip content="Coming soon! :3" showArrow>
+                    <Button variant="bordered" color="primary">
+                      Share Profile
+                    </Button>
+                  </Tooltip>
                 </div>
               </div>
               <div>
@@ -343,6 +360,7 @@ const ProfileContent: React.FC = () => {
                                       Edit Post
                                     </Button>
                                     <Button
+                                      isLoading={loading}
                                       startContent={<DeletePostIcon />}
                                       variant="light"
                                       color="danger"
