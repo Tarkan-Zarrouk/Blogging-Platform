@@ -241,7 +241,7 @@ const Register: React.FC = () => {
                 isInvalid={errorState.passwordErrorBool}
                 errorMessage={errorState.password}
                 placeholder="SomeCoolPassword123!"
-                type={isVisible ? "password" : "text"}
+                type={isVisible ? "text" : "password"}
                 value={userInformation.password}
                 onChange={handleInputChange}
                 name="password"
@@ -257,7 +257,7 @@ const Register: React.FC = () => {
                       size="sm"
                       onPress={() => setIsVisible(!isVisible)}
                     >
-                      {isVisible ? <EyeOpenIcon /> : <EyeClosedIcon />}
+                      {isVisible ? <EyeClosedIcon /> : <EyeOpenIcon />}
                     </Button>
                   </>
                 }

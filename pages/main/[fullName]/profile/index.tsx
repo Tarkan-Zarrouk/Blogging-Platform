@@ -37,7 +37,6 @@ const ProfileContent: React.FC = () => {
     pronouns: "",
     followers: [],
     following: [],
-    likes: [],
     posts: [],
     numberOfFollowers: 0,
     numberOfFollowing: 0,
@@ -220,11 +219,15 @@ const ProfileContent: React.FC = () => {
               </div>
               <div className="grid col-span-1 items-center ml-5">
                 <div className="flex flex-row gap-x-4">
+                  <Tooltip
+                    content={"Total Likes: " + userInformation.numberOfLikes}
+                  >
+                    <p className="hover:underline hover:cursor-pointer text-gray-500">
+                      {userInformation.numberOfPosts} Posts
+                    </p>
+                  </Tooltip>
                   <p className="hover:underline hover:cursor-pointer text-gray-500">
-                    {userInformation.numberOfPosts} Posts
-                  </p>
-                  <p className="hover:underline hover:cursor-pointer text-gray-500">
-                    {userInformation.numberOfFollowing} following
+                    {userInformation.numberOfFollowing} Following
                   </p>
                   <p className="hover:underline hover:cursor-pointer text-gray-500">
                     {userInformation.numberOfFollowers} Followers
@@ -272,9 +275,8 @@ const ProfileContent: React.FC = () => {
                 </h1>
                 <div className="grid grid-cols-3 gap-x-5">
                   {userInformation.posts.map((post, id) => {
-                    console.log(post); // Log the post data to verify its format
+                    console.log(post);
 
-                    // Extract the base64 image data from the post string
                     const base64Data = post.split(",").pop();
                     const imageSrc = `data:image/png;base64,${base64Data}`;
 
@@ -290,16 +292,16 @@ const ProfileContent: React.FC = () => {
                         >
                           <Card
                             key={id}
-                            className="hover:-translate-y-1 flex items-center justify-center"
+                            className="hover:-translate-y-1 flex items-center justify-center h-full"
                           >
-                            <CardHeader>
+                            <CardHeader className="flex items-center justify-center">
                               <img
                                 src={imageSrc}
                                 alt={`Post ${id}`}
-                                className=" hover:cursor-pointer"
+                                className="hover:cursor-pointer"
                               />
                             </CardHeader>
-                            <CardBody className="flex flex-row gap-x-5 justify-center">
+                            <CardBody className="flex flex-row gap-x-5 justify-center items-center">
                               <Button
                                 variant="light"
                                 onClick={(e: React.MouseEvent) =>

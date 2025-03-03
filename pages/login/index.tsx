@@ -134,7 +134,7 @@ const LoginPage: React.FC = () => {
               errorMessage={errorState.passwordErrorMessage}
               onChange={handlePasswordChange}
               placeholder="SomeCoolPassword123!"
-              type={isVisible ? "password" : "text"}
+              type={isVisible ? "text" : "password"}
               name="password"
               label="Password"
               labelPlacement="outside"
@@ -148,7 +148,7 @@ const LoginPage: React.FC = () => {
                     size="sm"
                     onPress={() => setIsVisible(!isVisible)}
                   >
-                    {isVisible ? <EyeOpenIcon /> : <EyeClosedIcon />}
+                    {isVisible ? <EyeClosedIcon /> : <EyeOpenIcon />}
                   </Button>
                 </>
               }

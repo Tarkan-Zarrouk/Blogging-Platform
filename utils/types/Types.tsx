@@ -11,7 +11,6 @@ export type ProfileInfo = {
   pronouns: string;
   followers: number[];
   following: number[];
-  likes: number[];
   posts: string[];
   numberOfFollowers: number;
   numberOfFollowing: number;
