@@ -35,3 +35,9 @@ export interface LoginErrorResponder {
   emailErrorMessage: string;
   passwordErrorMessage: string;
 }
+
+
+export interface Post {
+  attachment: string,
+  comments: string,
+}

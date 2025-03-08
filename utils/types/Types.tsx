@@ -1,23 +1,25 @@
+import { Post } from "../interfaces";
+
 export type GeneralUserInfo = {
   fullName: string;
   profilePicture: string;
   uid: string;
 };
-export type ProfileInfo = {
+export interface ProfileInfo {
   email: string;
   fullName: string;
   profilePicture: string;
   description: string;
   pronouns: string;
-  followers: number[];
-  following: number[];
-  posts: string[];
+  followers: string[];
+  following: string[];
+  posts: Post[];
   numberOfFollowers: number;
   numberOfFollowing: number;
   numberOfLikes: number;
   numberOfPosts: number;
   gender: string;
   sexualIdentity: string;
-  emailVerified: boolean,
-  uid: string,
-};
+  emailVerified: boolean;
+  uid: string;
+}

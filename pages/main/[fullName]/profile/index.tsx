@@ -264,19 +264,34 @@ const ProfileContent: React.FC = () => {
             <CardBody>
               <div className="flex flex-col mb-5">
                 {modifyProfile ? (
-                  <>
-                    <Input
-                      variant="bordered"
-                      color="primary"
-                      value={userInformation.description}
-                      onChange={(e) =>
-                        setUserInformation({
-                          ...userInformation,
-                          description: e.target.value,
-                        })
-                      }
-                    />
-                  </>
+                  <div className="grid grid-cols-2 items-center">
+                    <div className="grid col-span-1">
+                      <Input
+                        variant="bordered"
+                        labelPlacement="Outside"
+                        placeholder="I'm pwetty :3"
+                        color="primary"
+                        value={userInformation.description}
+                        onChange={(e) =>
+                          setUserInformation({
+                            ...userInformation,
+                            description: e.target.value,
+                          })
+                        }
+                      />
+                    </div>
+                    <div className="grid col-span-1">
+                      <Button
+                        variant="bordered"
+                        color="primary"
+                        size="sm"
+                        onPress={editProfile}
+                        isLoading={loading}
+                      >
+                        Update
+                      </Button>
+                    </div>
+                  </div>
                 ) : (
                   userInformation.description
                 )}
@@ -302,14 +317,7 @@ const ProfileContent: React.FC = () => {
                   Posts
                 </h1>
                 <div className="grid grid-cols-3 gap-x-5">
-                  {userInformation.posts.map((post, id) => {
-                    // console.log(post);
-
-                    // const base64Data = typeof post === 'string' ? post.split(",") : [];
-                    // const imageSrc = `data:image/png;base64,${base64Data.join('')}`;
-
-                    const imageSrc = 0;
-                    // console.log(post.replace(""));
+                  {userInformation.posts.map((post: Post, id) => {
                     return (
                       <Tooltip key={id} content="Visit Post?" showArrow>
                         <Link
@@ -326,7 +334,11 @@ const ProfileContent: React.FC = () => {
                           >
                             <CardHeader className="flex items-center justify-center">
                               {/* {imageSrc.split("data")} */}
-                              <img src={post.attachment} /> {/** Ignore this error, if it works it works idgaf */}
+                              <img
+                                src={post.attachment}
+                                alt="Poster for image"
+                              />{" "}
+                              {/** Ignore this error, if it works it works idgaf */}
                               {/* <img
                                 // src={String(imageSrc)}
                                 alt={`Post ${id}`}
@@ -334,24 +346,28 @@ const ProfileContent: React.FC = () => {
                               /> */}
                             </CardHeader>
                             <CardBody className="flex flex-row gap-x-5 justify-center items-center">
-                              <Button
-                                variant="light"
-                                onClick={(e: React.MouseEvent) =>
-                                  e.preventDefault()
-                                }
-                                isIconOnly
-                              >
-                                <HeartIcon />
-                              </Button>
-                              <Button
-                                variant="light"
-                                onClick={(e: React.MouseEvent) =>
-                                  e.preventDefault()
-                                }
-                                isIconOnly
-                              >
-                                <CommentIcon />
-                              </Button>
+                              <Tooltip content={post.likes.length}>
+                                <Button
+                                  variant="light"
+                                  onClick={(e: React.MouseEvent) =>
+                                    e.preventDefault()
+                                  }
+                                  isIconOnly
+                                >
+                                  <HeartIcon />
+                                </Button>
+                              </Tooltip>
+                              <Tooltip content={post.comments.length}>
+                                <Button
+                                  variant="light"
+                                  onClick={(e: React.MouseEvent) =>
+                                    e.preventDefault()
+                                  }
+                                  isIconOnly
+                                >
+                                  <CommentIcon />
+                                </Button>
+                              </Tooltip>
                               <Popover placement="bottom">
                                 <PopoverTrigger>
                                   <Button
