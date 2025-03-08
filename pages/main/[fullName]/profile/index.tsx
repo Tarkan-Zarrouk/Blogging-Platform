@@ -212,9 +212,20 @@ const ProfileContent: React.FC = () => {
                               placement="bottom"
                               showArrow
                             >
-                              <div className="grid col-span-1">
-                                Email Verified:{" "}
-                                {userInformation.emailVerified.toString()}
+                              <div>
+                                <Tooltip
+                                  content="Note: Make sure to restart your browser after verifying email, we know it's not ideal."
+                                  color="warning"
+                                  placement="bottom"
+                                  showArrow
+                                >
+                                  <div className="grid col-span-1">
+                                    Email Verified:{" "}
+                                    {userInformation.emailVerified
+                                      ? "True"
+                                      : "False"}
+                                  </div>
+                                </Tooltip>
                               </div>
                             </Tooltip>
                           </div>
@@ -292,13 +303,15 @@ const ProfileContent: React.FC = () => {
                 </h1>
                 <div className="grid grid-cols-3 gap-x-5">
                   {userInformation.posts.map((post, id) => {
-                    console.log(post);
+                    // console.log(post);
 
-                    const base64Data = post.split(",").pop();
-                    const imageSrc = `data:image/png;base64,${base64Data}`;
+                    // const base64Data = typeof post === 'string' ? post.split(",") : [];
+                    // const imageSrc = `data:image/png;base64,${base64Data.join('')}`;
 
+                    const imageSrc = 0;
+                    // console.log(post.replace(""));
                     return (
-                      <Tooltip content="Visit Post?" showArrow>
+                      <Tooltip key={id} content="Visit Post?" showArrow>
                         <Link
                           href={
                             "/main/" +
@@ -312,11 +325,13 @@ const ProfileContent: React.FC = () => {
                             className="hover:-translate-y-1 flex items-center justify-center h-full"
                           >
                             <CardHeader className="flex items-center justify-center">
-                              <img
-                                src={imageSrc}
+                              {/* {imageSrc.split("data")} */}
+                              <img src={post.attachment} /> {/** Ignore this error, if it works it works idgaf */}
+                              {/* <img
+                                // src={String(imageSrc)}
                                 alt={`Post ${id}`}
                                 className="hover:cursor-pointer"
-                              />
+                              /> */}
                             </CardHeader>
                             <CardBody className="flex flex-row gap-x-5 justify-center items-center">
                               <Button

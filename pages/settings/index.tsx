@@ -19,7 +19,7 @@ import {
   ModalHeader,
   useDisclosure,
 } from "@heroui/react";
-import { deleteDoc, doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
+import { deleteDoc, doc, getDoc, updateDoc } from "firebase/firestore";
 import {
   sendEmailVerification,
   updateEmail,
@@ -47,17 +47,19 @@ const Settings = () => {
     auth.onAuthStateChanged((user) => {
       if (user) {
         if (user.emailVerified) {
-          getDoc(doc(db, "users", user.uid)).then((docSnap) => {
-            if (docSnap.exists()) {
-              updateDoc(docSnap.ref, {
-                emailVerified: userInformation.verifyEmail
-              });
-            }
-          });
+          console.log("e");
           setUserInformation((prevState) => ({
             ...prevState,
             verifyEmail: true,
           }));
+          getDoc(doc(db, "users", user.uid)).then((docSnap) => {
+            if (docSnap.exists()) {
+              updateDoc(docSnap.ref, {
+                emailVerified: userInformation.verifyEmail,
+              });
+              console.log(docSnap.data())
+            }
+          });
         }
         const docRef = doc(db, "users", user.uid);
         getDoc(docRef).then((docSnap) => {
@@ -442,7 +444,7 @@ const Settings = () => {
                 <h1 className="text-5xl font-bold underline text-gray-800 mb-5">
                   Welcome to the Settings!
                 </h1>
-                <h4 className="text-xl">Personalize is here! 😊</h4>
+                <h4 className="text-xl">Personalization is here! 😊</h4>
               </div>
             </CardHeader>
             <CardBody className="pt-5">

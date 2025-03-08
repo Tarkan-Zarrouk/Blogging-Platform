@@ -1,43 +1,76 @@
 import { Attachment } from "@/components/icons/PostIcons/Attachment";
 import { auth, db } from "@/utils/firebase/Firebase";
-import { Input, Button, Card, addToast } from "@heroui/react";
+import {
+  Input,
+  Button,
+  addToast,
+  Card,
+  CardHeader,
+  CardBody,
+  User,
+} from "@heroui/react";
 import {
   addDoc,
   collection,
   doc,
   getDoc,
-  setDoc,
+  getDocs,
   updateDoc,
 } from "firebase/firestore";
 import { useState, useEffect } from "react";
 
 const ContentFeed: React.FC = () => {
-  const [content, setContent] = useState({
+  const [content, setContent] = useState<{
+    uid: string;
+    text: string;
+    attachment: string;
+    posts: { date: string; text: string; attachment: string }[];
+  }>({
     uid: "",
     text: "",
     attachment: "",
+    posts: [],
   });
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
     auth.onAuthStateChanged((user) => {
       if (user) {
-        setContent({ ...content, uid: user.uid });
+        setContent((prevContent) => ({ ...prevContent, uid: user.uid }));
       }
     });
+
+    const fetchPosts = async () => {
+      const postsRef = collection(db, "users");
+      const postsSnapshot = await getDocs(postsRef);
+
+      postsSnapshot.forEach((doc) => {
+        const postData = doc.data();
+        console.log(postData.posts);
+        // setContent((prevContent) => ({
+        //   ...prevContent,
+        //   posts: [
+        //     ...prevContent.posts,
+        //     {
+        //       date: postData.date,
+        //       text: postData.text,
+        //       attachment: postData.attachment,
+        //     },
+        //   ],
+        // }));
+      });
+      // console.log(content);
+    };
+
+    fetchPosts();
     setIsClient(true);
   }, []);
 
   const handlePostAttachment = (e: any) => {
     const file = (e.target as HTMLInputElement).files?.[0];
     if (file) {
-      console.log("A");
       const reader = new FileReader();
       reader.onloadend = () => {
-        console.log(
-          "File reading completed",
-          reader.result?.toString().substring(0, 50) + "..."
-        );
         const base64String = reader.result as string;
         setContent((prevContent) => ({
           ...prevContent,
@@ -45,8 +78,6 @@ const ContentFeed: React.FC = () => {
         }));
       };
       reader.readAsDataURL(file);
-    } else {
-      console.log("e");
     }
   };
 
@@ -66,32 +97,41 @@ const ContentFeed: React.FC = () => {
       });
       return;
     }
-    // Add post to users/userId --> field "posts" --> array of postIds
+
     const postRef = collection(db, "posts");
-    addDoc(postRef, {
+    const newPost = {
       uid: content.uid,
       text: content.text,
       attachment: content.attachment,
+      date: new Date().toISOString(),
       likes: [],
       comments: [],
-    })
-      .then((docRef) => {
+    };
+    addDoc(postRef, newPost)
+      .then(() => {
         const userRef = doc(db, "users", content.uid);
-        getDoc(userRef).then((userDoc) => {
-          if (userDoc.exists()) {
-            const userData = userDoc.data();
-            const updatedPosts = [
-              new Date() + ", " + content.text + ", " + content.attachment,
-            ];
-            if (userData.posts) {
-              updatedPosts.push(...userData.posts);
+        getDoc(userRef)
+          .then((userDoc) => {
+            if (userDoc.exists()) {
+              const userData = userDoc.data();
+              const updatedPosts = [newPost];
+              if (userData.posts) {
+                updatedPosts.push(...userData.posts);
+              }
+              updateDoc(userRef, {
+                posts: updatedPosts,
+              });
             }
-            updateDoc(userRef, {
-              posts: updatedPosts,
+          })
+          .catch((e) => {
+            addToast({
+              title: "Error",
+              description: "Oops, an error as occured: " + e,
+              color: "danger",
+              shouldShowTimeoutProgess: true,
+              timeout: 3000,
             });
-            console.log(userData.posts);
-          }
-        });
+          });
         addToast({
           title: "Post created",
           description: "Your post has been created successfully.",
@@ -147,7 +187,11 @@ const ContentFeed: React.FC = () => {
       <h1 className="text-md font-light underline">
         Here's where your content will be displayed:
       </h1>
-      <div className="">{}</div>
+      <div className="">
+        {/* {content.posts.map((post, index) => (
+          <Card key={index}>{post.text}</Card>
+        ))} */}
+      </div>
     </div>
   );
 };
