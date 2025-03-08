@@ -102,7 +102,7 @@ const ProfileContent: React.FC = () => {
             description: "Your profile has been successfully updated!",
             hideIcon: true,
             timeout: 3000,
-            shouldShowTimeoutProgess: true,
+            shouldShowTimeoutProgress: true,
           });
           setModifyProfile(false);
         })
@@ -114,7 +114,7 @@ const ProfileContent: React.FC = () => {
             description: `Failed to update profile: ${error.message}`,
             hideIcon: true,
             timeout: 3000,
-            shouldShowTimeoutProgess: true,
+            shouldShowTimeoutProgress: true,
           });
         });
     }
@@ -268,7 +268,7 @@ const ProfileContent: React.FC = () => {
                     <div className="grid col-span-1">
                       <Input
                         variant="bordered"
-                        labelPlacement="Outside"
+                        labelPlacement="outside"
                         placeholder="I'm pwetty :3"
                         color="primary"
                         value={userInformation.description}
@@ -317,7 +317,7 @@ const ProfileContent: React.FC = () => {
                   Posts
                 </h1>
                 <div className="grid grid-cols-3 gap-x-5">
-                  {userInformation.posts.map((post: Post, id) => {
+                  {userInformation.posts.map((post, id) => {
                     return (
                       <Tooltip key={id} content="Visit Post?" showArrow>
                         <Link

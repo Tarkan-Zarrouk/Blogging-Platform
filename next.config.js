@@ -2,7 +2,7 @@
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ['help.kajabi.com'],
+    domains: ['picsum.photos', 'help.kajabi.com', 'loremflickr.com'], // idek anymore
   },
 }
 

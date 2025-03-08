@@ -29,7 +29,7 @@ const LoginPage: React.FC = () => {
         description: "You have successfully registered to Nexus!",
         hideIcon: true,
         timeout: 3000,
-        shouldShowTimeoutProgess: true,
+        shouldShowTimeoutProgress: true,
       });
     }
   }, [router.query, addToast]);

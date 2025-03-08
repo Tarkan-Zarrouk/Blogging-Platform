@@ -57,7 +57,7 @@ const Settings = () => {
               updateDoc(docSnap.ref, {
                 emailVerified: userInformation.verifyEmail,
               });
-              console.log(docSnap.data())
+              console.log(docSnap.data());
             }
           });
         }
@@ -87,7 +87,7 @@ const Settings = () => {
         description: "Please upload a PNG file!",
         hideIcon: true,
         timeout: 3000,
-        shouldShowTimeoutProgess: true,
+        shouldShowTimeoutProgress: true,
       });
       e.target.value = "";
     } else if (file) {
@@ -110,7 +110,7 @@ const Settings = () => {
         description: "User ID is missing!",
         hideIcon: true,
         timeout: 3000,
-        shouldShowTimeoutProgess: true,
+        shouldShowTimeoutProgress: true,
       });
       return;
     }
@@ -126,7 +126,7 @@ const Settings = () => {
               description: "Profile picture updated successfully!",
               hideIcon: true,
               timeout: 3000,
-              shouldShowTimeoutProgess: true,
+              shouldShowTimeoutProgress: true,
             });
           })
           .catch((error) => {
@@ -135,7 +135,7 @@ const Settings = () => {
               description: `Failed to update profile picture: ${error.message}`,
               hideIcon: true,
               timeout: 3000,
-              shouldShowTimeoutProgess: true,
+              shouldShowTimeoutProgress: true,
             });
           });
       }
@@ -156,7 +156,7 @@ const Settings = () => {
         description: "User ID is missing!",
         hideIcon: true,
         timeout: 3000,
-        shouldShowTimeoutProgess: true,
+        shouldShowTimeoutProgress: true,
       });
       return;
     }
@@ -172,7 +172,7 @@ const Settings = () => {
               description: "Full Name updated successfully!",
               hideIcon: true,
               timeout: 3000,
-              shouldShowTimeoutProgess: true,
+              shouldShowTimeoutProgress: true,
             });
           })
           .catch((error) => {
@@ -181,7 +181,7 @@ const Settings = () => {
               description: `Failed to update full name: ${error.message}`,
               hideIcon: true,
               timeout: 3000,
-              shouldShowTimeoutProgess: true,
+              shouldShowTimeoutProgress: true,
             });
           });
       }
@@ -202,7 +202,7 @@ const Settings = () => {
         description: "User ID is missing!",
         hideIcon: true,
         timeout: 3000,
-        shouldShowTimeoutProgess: true,
+        shouldShowTimeoutProgress: true,
       });
       return;
     }
@@ -221,7 +221,7 @@ const Settings = () => {
           description: "Email updated successfully!",
           hideIcon: true,
           timeout: 3000,
-          shouldShowTimeoutProgess: true,
+          shouldShowTimeoutProgress: true,
         });
 
         const password = prompt(
@@ -233,7 +233,7 @@ const Settings = () => {
             description: "Password is required to update email!",
             hideIcon: true,
             timeout: 3000,
-            shouldShowTimeoutProgess: true,
+            shouldShowTimeoutProgress: true,
           });
           return;
         }
@@ -255,7 +255,7 @@ const Settings = () => {
           description: "Authentication email updated successfully!",
           hideIcon: true,
           timeout: 3000,
-          shouldShowTimeoutProgess: true,
+          shouldShowTimeoutProgress: true,
         });
       })
       .catch((error) => {
@@ -264,7 +264,7 @@ const Settings = () => {
           description: `Failed to update email: ${error.message}`,
           hideIcon: true,
           timeout: 3000,
-          shouldShowTimeoutProgess: true,
+          shouldShowTimeoutProgress: true,
         });
       });
   };
@@ -282,7 +282,7 @@ const Settings = () => {
         description: "User ID is missing!",
         hideIcon: true,
         timeout: 3000,
-        shouldShowTimeoutProgess: true,
+        shouldShowTimeoutProgress: true,
       });
       return;
     }
@@ -297,7 +297,7 @@ const Settings = () => {
               description: "Password updated successfully!",
               hideIcon: true,
               timeout: 3000,
-              shouldShowTimeoutProgess: true,
+              shouldShowTimeoutProgress: true,
             });
 
             const password = prompt(
@@ -309,7 +309,7 @@ const Settings = () => {
                 description: "Invalid",
                 hideIcon: true,
                 timeout: 3000,
-                shouldShowTimeoutProgess: true,
+                shouldShowTimeoutProgress: true,
               });
               return;
             }
@@ -331,7 +331,7 @@ const Settings = () => {
               description: "Authentication password updated successfully!",
               hideIcon: true,
               timeout: 3000,
-              shouldShowTimeoutProgess: true,
+              shouldShowTimeoutProgress: true,
             });
           })
           .catch((error) => {
@@ -340,7 +340,7 @@ const Settings = () => {
               description: `Failed to update password: ${error.message}`,
               hideIcon: true,
               timeout: 3000,
-              shouldShowTimeoutProgess: true,
+              shouldShowTimeoutProgress: true,
             });
           });
       }
@@ -354,7 +354,7 @@ const Settings = () => {
         description: "Password is required to delete account!",
         hideIcon: true,
         timeout: 3000,
-        shouldShowTimeoutProgess: true,
+        shouldShowTimeoutProgress: true,
       });
       return;
     }
@@ -373,7 +373,7 @@ const Settings = () => {
           description: "Account deleted successfully!",
           hideIcon: true,
           timeout: 3000,
-          shouldShowTimeoutProgess: true,
+          shouldShowTimeoutProgress: true,
         });
         router.push("/");
       })
@@ -383,7 +383,7 @@ const Settings = () => {
           description: `Failed to delete account: ${error.message}`,
           hideIcon: true,
           timeout: 3000,
-          shouldShowTimeoutProgess: true,
+          shouldShowTimeoutProgress: true,
         });
       });
   };
@@ -400,7 +400,7 @@ const Settings = () => {
               description: "Successfully sent email!",
               hideIcon: true,
               timeout: 3000,
-              shouldShowTimeoutProgess: true,
+              shouldShowTimeoutProgress: true,
               variant: "solid",
             });
             window.location.reload;
@@ -411,7 +411,7 @@ const Settings = () => {
               description: "We have failed to send the reset because: " + e,
               hideIcon: true,
               timeout: 3000,
-              shouldShowTimeoutProgess: true,
+              shouldShowTimeoutProgress: true,
             });
           });
         setLoading(false);
@@ -421,7 +421,7 @@ const Settings = () => {
           description: "No user is currently signed in!",
           hideIcon: true,
           timeout: 3000,
-          shouldShowTimeoutProgess: true,
+          shouldShowTimeoutProgress: true,
         });
         setLoading(false);
       }

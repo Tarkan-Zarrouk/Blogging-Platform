@@ -8,6 +8,7 @@ import {
   CardHeader,
   CardBody,
   User,
+  Pagination,
 } from "@heroui/react";
 import {
   addDoc,
@@ -15,6 +16,7 @@ import {
   doc,
   getDoc,
   getDocs,
+  query,
   updateDoc,
 } from "firebase/firestore";
 import { useState, useEffect } from "react";
@@ -24,46 +26,37 @@ const ContentFeed: React.FC = () => {
     uid: string;
     text: string;
     attachment: string;
-    posts: { date: string; text: string; attachment: string }[];
+    userAccounts: any[];
   }>({
     uid: "",
     text: "",
     attachment: "",
-    posts: [],
+    userAccounts: [],
   });
   const [isClient, setIsClient] = useState(false);
+  const ITEMS_PER_PAGE = 5;
+  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
-    auth.onAuthStateChanged((user) => {
+    const unsubscribe = auth.onAuthStateChanged(async (user) => {
       if (user) {
-        setContent((prevContent) => ({ ...prevContent, uid: user.uid }));
+        const userQuery: any = query(collection(db, "users"));
+        let snapshot = await getDocs(userQuery);
+        let allUserAccounts: any[] = [];
+        snapshot.docs.forEach((doc) => {
+          allUserAccounts.push(doc.data());
+        });
+        setContent((prevContent) => ({
+          ...prevContent,
+          uid: user.uid,
+          userAccounts: allUserAccounts,
+        }));
       }
     });
-
-    const fetchPosts = async () => {
-      const postsRef = collection(db, "users");
-      const postsSnapshot = await getDocs(postsRef);
-
-      postsSnapshot.forEach((doc) => {
-        const postData = doc.data();
-        console.log(postData.posts);
-        // setContent((prevContent) => ({
-        //   ...prevContent,
-        //   posts: [
-        //     ...prevContent.posts,
-        //     {
-        //       date: postData.date,
-        //       text: postData.text,
-        //       attachment: postData.attachment,
-        //     },
-        //   ],
-        // }));
-      });
-      // console.log(content);
+    return () => {
+      unsubscribe();
+      setIsClient(true);
     };
-
-    fetchPosts();
-    setIsClient(true);
   }, []);
 
   const handlePostAttachment = (e: any) => {
@@ -98,7 +91,8 @@ const ContentFeed: React.FC = () => {
       return;
     }
 
-    const postRef = collection(db, "posts");
+    const userRef = doc(db, "users", content.uid);
+    const postRef = collection(userRef, "posts");
     const newPost = {
       uid: content.uid,
       text: content.text,
@@ -109,7 +103,6 @@ const ContentFeed: React.FC = () => {
     };
     addDoc(postRef, newPost)
       .then(() => {
-        const userRef = doc(db, "users", content.uid);
         getDoc(userRef)
           .then((userDoc) => {
             if (userDoc.exists()) {
@@ -128,7 +121,7 @@ const ContentFeed: React.FC = () => {
               title: "Error",
               description: "Oops, an error as occured: " + e,
               color: "danger",
-              shouldShowTimeoutProgess: true,
+              shouldShowTimeoutProgress: true,
               timeout: 3000,
             });
           });
@@ -187,10 +180,59 @@ const ContentFeed: React.FC = () => {
       <h1 className="text-md font-light underline">
         Here's where your content will be displayed:
       </h1>
-      <div className="">
-        {/* {content.posts.map((post, index) => (
-          <Card key={index}>{post.text}</Card>
-        ))} */}
+      <div className="mx-auto w-full">
+        {(() => {
+          const paginatedPosts = content.userAccounts
+            .flatMap(
+              (account: any) =>
+                account.posts?.map((post: any) => ({
+                  ...post,
+                  user: account,
+                })) || []
+            )
+            .sort(() => Math.random() - 0.5)
+            .slice(
+              (currentPage - 1) * ITEMS_PER_PAGE,
+              currentPage * ITEMS_PER_PAGE
+            );
+
+          return (
+            <>
+              {paginatedPosts.map((post: any, postIndex: number) => (
+                <Card className="mt-5 mx-auto" key={postIndex}>
+                  <CardHeader>
+                    <User
+                      name={post.user.fullName}
+                      avatarProps={{ src: post.user.profilePicture }}
+                    />
+                  </CardHeader>
+                  <CardBody>
+                    <p>{post.text}</p>
+                    {post.attachment && (
+                      <img
+                        src={post.attachment}
+                        alt="post"
+                        className="w-fit h-52 mx-auto"
+                      />
+                    )}
+                  </CardBody>
+                </Card>
+              ))}
+              <div className="flex justify-center mt-4">
+                <Pagination
+                  initialPage={1}
+                  showControls={true}
+                  total={Math.ceil(
+                    content.userAccounts.flatMap(
+                      (account: any) => account.posts || []
+                    ).length / ITEMS_PER_PAGE
+                  )}
+                  onChange={(page) => setCurrentPage(page)}
+                />
+              </div>
+            </>
+          );
+        })()}
       </div>
     </div>
   );

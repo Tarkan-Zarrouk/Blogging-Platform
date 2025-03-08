@@ -38,6 +38,7 @@ export interface LoginErrorResponder {
 
 
 export interface Post {
+  likes: any;
   attachment: string,
   comments: string,
 }
