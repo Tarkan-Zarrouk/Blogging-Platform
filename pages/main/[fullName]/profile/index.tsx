@@ -4,7 +4,7 @@ import { CommentIcon } from "@/components/icons/PostIcons/PostSpecificIcons/Comm
 import { DeletePostIcon } from "@/components/icons/PostIcons/PostSpecificIcons/DeletePostIcon";
 import { EditPostIcon } from "@/components/icons/PostIcons/PostSpecificIcons/EditPostIcon";
 import { HeartIcon } from "@/components/icons/PostIcons/PostSpecificIcons/HeartIcon";
-import SettingsIcon from "@/components/icons/SettingsIcon";
+import SettingsIcon from "@/components/icons/GeneralIcons/SettingsIcon";
 import { auth, db } from "@/utils/firebase/Firebase";
 import { ProfileInfo } from "@/utils/types/Types";
 import {
@@ -71,7 +71,9 @@ const ProfileContent: React.FC = () => {
               numberOfPosts: docSnap.data().posts.length,
               uid: docSnap.data().uid,
               sexualIdentity: docSnap.data().sexualIdentity,
-              emailVerified: auth.currentUser ? auth.currentUser.emailVerified : false,
+              emailVerified: auth.currentUser
+                ? auth.currentUser.emailVerified
+                : false,
               gender: docSnap.data().gender,
               createdAt: docSnap.data().createdAt,
             }));

@@ -1,8 +1,8 @@
-import SettingsIcon from "@/components/icons/SettingsIcon";
-import SignOutIcon from "@/components/icons/SignOutIcon";
-import ProfileIcon from "@/components/icons/UserIcon";
+import SettingsIcon from "@/components/icons/GeneralIcons/SettingsIcon";
+import SignOutIcon from "@/components/icons/GeneralIcons/SignOutIcon";
+import ProfileIcon from "@/components/icons/GeneralIcons/UserIcon";
 import { doSignOut } from "@/utils/firebase/ConfigFunctions";
-import { auth, db, firebaseConfig } from "@/utils/firebase/Firebase";
+import { auth, db } from "@/utils/firebase/Firebase";
 import { GeneralUserInfo } from "@/utils/types/Types";
 import {
   Button,

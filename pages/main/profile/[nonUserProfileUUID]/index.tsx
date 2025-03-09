@@ -69,6 +69,11 @@ const ExternalUserProfile = () => {
         (uid): uid is string => uid !== undefined
       ),
     });
+    updateDoc(doc(db, "users", auth.currentUser?.uid as string), {
+      following: [...userInformation.following, nonUserProfileUUID].filter(
+        (uid): uid is string => uid !== undefined
+      ),
+    });
     setFollowState(true);
   };
   const unfollowUser = () => {
@@ -81,6 +86,11 @@ const ExternalUserProfile = () => {
     updateDoc(doc(db, "users", nonUserProfileUUID as string), {
       followers: userInformation.followers.filter(
         (uid) => uid !== auth.currentUser?.uid
+      ),
+    });
+    updateDoc(doc(db, "users", auth.currentUser?.uid as string), {
+      following: userInformation.following.filter(
+      (uid) => uid !== nonUserProfileUUID
       ),
     });
     setFollowState(!followState);

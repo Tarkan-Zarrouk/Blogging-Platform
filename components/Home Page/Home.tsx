@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
-import HomeIconCellPhone from "../icons/HomeIconCellPhone";
+import HomeIconCellPhone from "../icons/GeneralIcons/HomeIconCellPhone";
 import { Card, CardBody, CardFooter, CardHeader } from "@heroui/card";
 import { User } from "@heroui/user";
 import { Skeleton } from "@heroui/skeleton";
 import { Button } from "@heroui/button";
-import DownArrowIcon from "../icons/DownArrowIcon";
-import ThreeDotsMenuIcon from "../icons/ThreeDotsMenuIcon";
+import DownArrowIcon from "../icons/GeneralIcons/DownArrowIcon";
+import ThreeDotsMenuIcon from "../icons/GeneralIcons/ThreeDotsMenuIcon";
 import { useRouter } from "next/router";
 
 const Home: React.FC = () => {
