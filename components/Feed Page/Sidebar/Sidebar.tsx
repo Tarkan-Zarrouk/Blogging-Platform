@@ -13,7 +13,7 @@ import { SidebarMenuItemsComponent } from "./ChildComponents/SidebarMenuItemsCom
 const Sidebar = () => {
   return (
     <>
-      <Card className="mx-5 h-52 fixed w-72">
+      <Card className="mx-5 fixed w-72">
         <CardHeader>
           <Button
             variant="light"
