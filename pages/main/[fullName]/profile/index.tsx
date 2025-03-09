@@ -282,6 +282,9 @@ const ProfileContent: React.FC = () => {
                                 userInformation.createdAt
                               ).toLocaleDateString()}
                             </div>
+                            <div className="text-[10px]">
+                              UID {userInformation.uid}
+                            </div>
                           </div>
                         )
                       }

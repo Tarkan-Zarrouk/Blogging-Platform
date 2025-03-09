@@ -115,6 +115,7 @@ const ExternalUserProfile = () => {
                       Created At:{" "}
                       {new Date(userInformation.createdAt).toLocaleDateString()}
                     </p>
+                    <p>UUID: {userInformation.uid}</p>
                   </div>
                 }
                 avatarProps={{
