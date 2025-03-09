@@ -394,34 +394,6 @@ const ProfileContent: React.FC = () => {
                             </CardHeader>
                             <Tooltip content="These are your stats... Want to change them? Click the post :)">
                               <CardBody className="flex flex-row gap-x-5 justify-center items-center">
-                                <Tooltip content={post.likes.length}>
-                                  <Button
-                                    variant="light"
-                                    onClick={(e: React.MouseEvent) =>
-                                      e.preventDefault()
-                                    }
-                                    isIconOnly
-                                  >
-                                    {post.likes.includes(
-                                      auth.currentUser?.uid
-                                    ) ? (
-                                      <HeartIcon fill="red" />
-                                    ) : (
-                                      <HeartIcon fill="black" />
-                                    )}
-                                  </Button>
-                                </Tooltip>
-                                <Tooltip content={post.comments.length}>
-                                  <Button
-                                    variant="light"
-                                    onClick={(e: React.MouseEvent) =>
-                                      e.preventDefault()
-                                    }
-                                    isIconOnly
-                                  >
-                                    <CommentIcon />
-                                  </Button>
-                                </Tooltip>
                                 <Popover placement="bottom">
                                   <PopoverTrigger>
                                     <Button

@@ -176,23 +176,13 @@ const ExternalUserProfile = () => {
                 <div className="grid grid-cols-3">
                   <Link href={"/main/profile/" + nonUserProfileUUID + "/post/"}>
                     <Tooltip content="Click to view their post!" showArrow>
-                        <Card className="mx-auto w-full">
+                      <Card className="mx-auto w-full">
                         <img
                           src={post.attachment}
                           className="w-full mx-auto"
                           alt="post photo"
                         />
-                        <CardFooter>
-                          <div className="grid grid-cols-2 mx-auto gap-x-5">
-                          <div>
-                            <HeartIcon fill="black" />
-                          </div>
-                          <div>
-                            <CommentIcon />
-                          </div>
-                          </div>
-                        </CardFooter>
-                        </Card>
+                      </Card>
                     </Tooltip>
                   </Link>
                 </div>
