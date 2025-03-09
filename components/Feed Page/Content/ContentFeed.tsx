@@ -24,6 +24,7 @@ import {
   query,
   updateDoc,
 } from "firebase/firestore";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
 import uuid from "uuid-random";
@@ -262,28 +263,30 @@ const ContentFeed: React.FC = () => {
             <>
               {paginatedPosts.map((post: any, postIndex: number) => (
                 <Card className="mt-5 mx-auto p-5" key={postIndex}>
-                  <CardHeader>
-                    <div className="flex justify-between w-full items-center">
-                      <User
-                        name={post.user.fullName}
-                        description={
-                          <div className="flex flex-col">
-                            <span>UUID: {post.user.uid}</span>
-                            <span>
-                              Post Specific UID:{" "}
-                              {post.user.posts[postIndex].postSpecificUID}
-                            </span>
-                          </div>
-                        }
-                        avatarProps={{ src: post.user.profilePicture }}
-                      />
-                      <div>
-                        <p className="font-extralight text-sm">
-                          {new Date(post.date).toLocaleString()}
-                        </p>
+                  <Link href={"/main/profile/" + post.user.uid}>
+                    <CardHeader>
+                      <div className="flex justify-between w-full items-center">
+                        <User
+                          name={post.user.fullName}
+                          description={
+                            <div className="flex flex-col">
+                              <span>UUID: {post.user.uid}</span>
+                              <span>
+                                Post Specific UID:{" "}
+                                {post.user.posts[postIndex].postSpecificUID}
+                              </span>
+                            </div>
+                          }
+                          avatarProps={{ src: post.user.profilePicture }}
+                        />
+                        <div>
+                          <p className="font-extralight text-sm">
+                            {new Date(post.date).toLocaleString()}
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                  </CardHeader>
+                    </CardHeader>
+                  </Link>
                   <CardBody>
                     <p>{post.text}</p>
                     {post.attachment && (

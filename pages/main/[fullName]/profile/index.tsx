@@ -46,6 +46,7 @@ const ProfileContent: React.FC = () => {
     sexualIdentity: "",
     emailVerified: false,
     uid: "",
+    createdAt: "",
   });
 
   useEffect(() => {
@@ -72,6 +73,7 @@ const ProfileContent: React.FC = () => {
               sexualIdentity: docSnap.data().sexualIdentity,
               emailVerified: docSnap.data().emailVerified,
               gender: docSnap.data().gender,
+              createdAt: docSnap.data().createdAt,
             }));
           }
         });
@@ -119,7 +121,53 @@ const ProfileContent: React.FC = () => {
         });
     }
   };
-
+  const deletePost = (postIndex: number) => {
+    let user = auth.currentUser;
+    let uid = user?.uid;
+    if (!user) {
+      router.push("/login");
+      return;
+    }
+    if (!uid) {
+      router.push("/login");
+      return;
+    }
+    const userDocRef = doc(db, "users", uid);
+    getDoc(userDocRef).then((docSnap) => {
+      if (docSnap.exists()) {
+        const userData = docSnap.data();
+        const updatedPosts = userData.posts.filter(
+          (_: any, index: number) => index !== postIndex
+        );
+        updateDoc(userDocRef, { posts: updatedPosts })
+          .then(() => {
+            setUserInformation((prevState) => ({
+              ...prevState,
+              posts: updatedPosts,
+              numberOfPosts: updatedPosts.length,
+            }));
+            addToast({
+              title: "Deleted!",
+              color: "primary",
+              description: "Your post has been successfully deleted!",
+              hideIcon: true,
+              timeout: 3000,
+              shouldShowTimeoutProgress: true,
+            });
+          })
+          .catch((error) => {
+            addToast({
+              title: "Error!",
+              color: "danger",
+              description: `Failed to delete post: ${error.message}`,
+              hideIcon: true,
+              timeout: 3000,
+              shouldShowTimeoutProgress: true,
+            });
+          });
+      }
+    });
+  };
   return (
     <>
       <div className="grid grid-cols-5 py-20 px-20">
@@ -228,6 +276,12 @@ const ProfileContent: React.FC = () => {
                                 </Tooltip>
                               </div>
                             </Tooltip>
+                            <div>
+                              Created At:{" "}
+                              {new Date(
+                                userInformation.createdAt
+                              ).toLocaleDateString()}
+                            </div>
                           </div>
                         )
                       }
@@ -333,43 +387,14 @@ const ProfileContent: React.FC = () => {
                             className="hover:-translate-y-1 flex items-center justify-center h-full"
                           >
                             <CardHeader className="flex items-center justify-center">
-                              {/* {imageSrc.split("data")} */}
                               <img
                                 src={post.attachment}
                                 alt="Poster for image"
-                              />{" "}
-                              {/** Ignore this error, if it works it works idgaf */}
-                              {/* <img
-                                // src={String(imageSrc)}
-                                alt={`Post ${id}`}
-                                className="hover:cursor-pointer"
-                              /> */}
+                              />
                             </CardHeader>
-                            <CardBody className="flex flex-row gap-x-5 justify-center items-center">
-                              <Tooltip content={post.likes.length}>
-                                <Button
-                                  variant="light"
-                                  onClick={(e: React.MouseEvent) =>
-                                    e.preventDefault()
-                                  }
-                                  isIconOnly
-                                >
-                                  <HeartIcon />
-                                </Button>
-                              </Tooltip>
-                              <Tooltip content={post.comments.length}>
-                                <Button
-                                  variant="light"
-                                  onClick={(e: React.MouseEvent) =>
-                                    e.preventDefault()
-                                  }
-                                  isIconOnly
-                                >
-                                  <CommentIcon />
-                                </Button>
-                              </Tooltip>
-                              <Popover placement="bottom">
-                                <PopoverTrigger>
+                            <Tooltip content="These are your stats... Want to change them? Click the post :)">
+                              <CardBody className="flex flex-row gap-x-5 justify-center items-center">
+                                <Tooltip content={post.likes.length}>
                                   <Button
                                     variant="light"
                                     onClick={(e: React.MouseEvent) =>
@@ -377,32 +402,63 @@ const ProfileContent: React.FC = () => {
                                     }
                                     isIconOnly
                                   >
-                                    <SettingsIcon />
+                                    {post.likes.includes(
+                                      auth.currentUser?.uid
+                                    ) ? (
+                                      <HeartIcon fill="red" />
+                                    ) : (
+                                      <HeartIcon fill="black" />
+                                    )}
                                   </Button>
-                                </PopoverTrigger>
-                                <PopoverContent>
-                                  <div className="flex flex-col gap-y-2">
+                                </Tooltip>
+                                <Tooltip content={post.comments.length}>
+                                  <Button
+                                    variant="light"
+                                    onClick={(e: React.MouseEvent) =>
+                                      e.preventDefault()
+                                    }
+                                    isIconOnly
+                                  >
+                                    <CommentIcon />
+                                  </Button>
+                                </Tooltip>
+                                <Popover placement="bottom">
+                                  <PopoverTrigger>
                                     <Button
                                       variant="light"
-                                      color="primary"
-                                      startContent={<EditPostIcon />}
-                                      className="justify-start"
+                                      onClick={(e: React.MouseEvent) =>
+                                        e.preventDefault()
+                                      }
+                                      isIconOnly
                                     >
-                                      Edit Post
+                                      <SettingsIcon />
                                     </Button>
-                                    <Button
-                                      isLoading={loading}
-                                      startContent={<DeletePostIcon />}
-                                      variant="light"
-                                      color="danger"
-                                      className="justify-start"
-                                    >
-                                      Delete Post
-                                    </Button>
-                                  </div>
-                                </PopoverContent>
-                              </Popover>
-                            </CardBody>
+                                  </PopoverTrigger>
+                                  <PopoverContent>
+                                    <div className="flex flex-col gap-y-2">
+                                      <Button
+                                        variant="light"
+                                        color="primary"
+                                        startContent={<EditPostIcon />}
+                                        className="justify-start"
+                                      >
+                                        Edit Post
+                                      </Button>
+                                      <Button
+                                        isLoading={loading}
+                                        startContent={<DeletePostIcon />}
+                                        variant="light"
+                                        color="danger"
+                                        className="justify-start"
+                                        onPress={() => deletePost(id)}
+                                      >
+                                        Delete Post
+                                      </Button>
+                                    </div>
+                                  </PopoverContent>
+                                </Popover>
+                              </CardBody>
+                            </Tooltip>
                           </Card>
                         </Link>
                       </Tooltip>

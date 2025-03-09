@@ -22,4 +22,5 @@ export interface ProfileInfo {
   sexualIdentity: string;
   emailVerified: boolean;
   uid: string;
+  createdAt: string,
 }
