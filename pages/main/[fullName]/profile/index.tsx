@@ -71,7 +71,7 @@ const ProfileContent: React.FC = () => {
               numberOfPosts: docSnap.data().posts.length,
               uid: docSnap.data().uid,
               sexualIdentity: docSnap.data().sexualIdentity,
-              emailVerified: docSnap.data().emailVerified,
+              emailVerified: auth.currentUser ? auth.currentUser.emailVerified : false,
               gender: docSnap.data().gender,
               createdAt: docSnap.data().createdAt,
             }));
