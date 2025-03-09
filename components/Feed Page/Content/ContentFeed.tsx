@@ -1,4 +1,7 @@
 import { Attachment } from "@/components/icons/PostIcons/Attachment";
+import { CommentIcon } from "@/components/icons/PostIcons/PostSpecificIcons/CommentIcon";
+import { HeartIcon } from "@/components/icons/PostIcons/PostSpecificIcons/HeartIcon";
+import { BookmarksIcon } from "@/components/icons/SidebarIcons/BookmarksIcon";
 import { auth, db } from "@/utils/firebase/Firebase";
 import {
   Input,
@@ -9,7 +12,10 @@ import {
   CardBody,
   User,
   Pagination,
+  CardFooter,
+  Tooltip,
 } from "@heroui/react";
+import { randomUUID } from "crypto";
 import {
   addDoc,
   collection,
@@ -19,9 +25,12 @@ import {
   query,
   updateDoc,
 } from "firebase/firestore";
+import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
+import uuid from "uuid-random";
 
 const ContentFeed: React.FC = () => {
+  const router = useRouter();
   const [content, setContent] = useState<{
     uid: string;
     text: string;
@@ -36,6 +45,7 @@ const ContentFeed: React.FC = () => {
   const [isClient, setIsClient] = useState(false);
   const ITEMS_PER_PAGE = 5;
   const [currentPage, setCurrentPage] = useState(1);
+  const [changeLikeState, setChangeLikeState] = useState<boolean>(false);
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
@@ -94,7 +104,8 @@ const ContentFeed: React.FC = () => {
     const userRef = doc(db, "users", content.uid);
     const postRef = collection(userRef, "posts");
     const newPost = {
-      uid: content.uid,
+      ownerUID: content.uid,
+      postSpecificUID: uuid(),
       text: content.text,
       attachment: content.attachment,
       date: new Date().toISOString(),
@@ -108,12 +119,13 @@ const ContentFeed: React.FC = () => {
             if (userDoc.exists()) {
               const userData = userDoc.data();
               const updatedPosts = [newPost];
-              if (userData.posts) {
+              if (Array.isArray(userData.posts)) {
                 updatedPosts.push(...userData.posts);
               }
               updateDoc(userRef, {
                 posts: updatedPosts,
               });
+              window.location.reload();
             }
           })
           .catch((e) => {
@@ -139,6 +151,57 @@ const ContentFeed: React.FC = () => {
           color: "danger",
         });
       });
+  };
+
+  const likePost = (userPostUID: string, postID: number) => {
+    const uid = auth.currentUser?.uid;
+    if (!uid) {
+      addToast({
+        title: "Error",
+        description: "User is not authenticated.",
+        color: "danger",
+      });
+      return router.push("/login");
+    }
+
+    setContent((prevContent) => {
+      const updatedUserAccounts = prevContent.userAccounts.map(
+        (account: any) => {
+          if (account.uid === userPostUID) {
+            const updatedPosts = account.posts.map((post: any, index: any) => {
+              if (index === postID) {
+                const updatedLikes = post.likes.includes(uid)
+                  ? post.likes.filter((likeUID: any) => likeUID !== uid)
+                  : [...post.likes, uid];
+                return { ...post, likes: updatedLikes };
+              }
+              return post;
+            });
+            return { ...account, posts: updatedPosts };
+          }
+          return account;
+        }
+      );
+      return { ...prevContent, userAccounts: updatedUserAccounts };
+    });
+
+    getDoc(doc(db, "users", userPostUID)).then((docSnapshot) => {
+      if (docSnapshot.exists()) {
+        let posts: Array<{ likes: string[] }> = docSnapshot.data().posts;
+        let likesArray: Array<string> = posts[postID].likes;
+        if (likesArray.includes(uid)) {
+          likesArray = likesArray.filter((likeUID) => likeUID !== uid);
+        } else {
+          likesArray.push(uid);
+        }
+        posts[postID].likes = likesArray;
+        updateDoc(doc(db, "users", userPostUID), {
+          posts: posts,
+        });
+      } else {
+        console.log("Post not found");
+      }
+    });
   };
 
   return (
@@ -183,13 +246,13 @@ const ContentFeed: React.FC = () => {
       <div className="mx-auto w-full">
         {(() => {
           const paginatedPosts = content.userAccounts
-            .flatMap(
-              (account: any) =>
-                account.posts?.map((post: any) => ({
-                  ...post,
-                  user: account,
-                })) || []
-            )
+            .flatMap((account: any) => {
+              const posts = Array.isArray(account.posts) ? account.posts : [];
+              return posts.map((post: any) => ({
+                ...post,
+                user: account,
+              }));
+            })
             .sort(() => Math.random() - 0.5)
             .slice(
               (currentPage - 1) * ITEMS_PER_PAGE,
@@ -199,12 +262,30 @@ const ContentFeed: React.FC = () => {
           return (
             <>
               {paginatedPosts.map((post: any, postIndex: number) => (
-                <Card className="mt-5 mx-auto" key={postIndex}>
+                <Card className="mt-5 mx-auto p-5" key={postIndex}>
                   <CardHeader>
-                    <User
-                      name={post.user.fullName}
-                      avatarProps={{ src: post.user.profilePicture }}
-                    />
+                    <div className="flex justify-between w-full items-center">
+                      <User
+                        name={post.user.fullName}
+                        description={
+                          <div className="flex flex-col">
+                            <span>UUID: {post.user.uid}</span>
+                            <span>
+                              Post Specific UID:{" "}
+                              {post.user.posts[postIndex].postSpecificUID}
+                            </span>
+                            {/* UUID: " + post.user.uid + "\n" + "Post Specific
+                            UUID: " */}
+                          </div>
+                        }
+                        avatarProps={{ src: post.user.profilePicture }}
+                      />
+                      <div>
+                        <p className="font-extralight text-sm">
+                          {new Date(post.date).toLocaleString()}
+                        </p>
+                      </div>
+                    </div>
                   </CardHeader>
                   <CardBody>
                     <p>{post.text}</p>
@@ -216,6 +297,44 @@ const ContentFeed: React.FC = () => {
                       />
                     )}
                   </CardBody>
+                  <CardFooter className="flex justify-center">
+                    <Tooltip content={post.likes.length} showArrow>
+                      {post.likes.includes(auth.currentUser?.uid) ? (
+                        <Button
+                          variant="light"
+                          color="danger"
+                          isIconOnly
+                          onPress={() => likePost(post.user.uid, postIndex)}
+                        >
+                          <HeartIcon fill="red" />
+                        </Button>
+                      ) : (
+                        <Button
+                          variant="light"
+                          color="primary"
+                          isIconOnly
+                          onPress={() => likePost(post.user.uid, postIndex)}
+                        >
+                          <HeartIcon fill="black" />
+                        </Button>
+                      )}
+                    </Tooltip>
+                    <Tooltip content="Click to view comments" showArrow>
+                      <Button variant="light" color="primary" isIconOnly>
+                        <CommentIcon />
+                      </Button>
+                    </Tooltip>
+                    <Tooltip content="Bookmark post" showArrow>
+                      <Button
+                        size="sm"
+                        variant="light"
+                        color="primary"
+                        isIconOnly
+                      >
+                        <BookmarksIcon />
+                      </Button>
+                    </Tooltip>
+                  </CardFooter>
                 </Card>
               ))}
               <div className="flex justify-center mt-4">

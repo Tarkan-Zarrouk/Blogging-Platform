@@ -21,28 +21,32 @@ export const SidebarMenuItemsComponent = () => {
           Home
         </Button>
       </Link>
-      <Button
-        className="w-full font-bold text-xl flex justify-between hover:-translate-y-1"
-        variant="light"
-        startContent={
-          <>
-            <ExploreIcon />
-          </>
-        }
-      >
-        Explore
-      </Button>
-      <Button
-        className="w-full font-bold text-xl flex justify-between hover:-translate-y-1"
-        variant="light"
-        startContent={
-          <>
-            <BookmarksIcon />
-          </>
-        }
-      >
-        Bookmarks
-      </Button>
+      <Link href="/main/explore/">
+        <Button
+          className="w-full font-bold text-xl flex justify-between hover:-translate-y-1"
+          variant="light"
+          startContent={
+            <>
+              <ExploreIcon />
+            </>
+          }
+        >
+          Explore
+        </Button>
+      </Link>
+      <Link href="/main/bookmarks/">
+        <Button
+          className="w-full font-bold text-xl flex justify-between hover:-translate-y-1"
+          variant="light"
+          startContent={
+            <>
+              <BookmarksIcon />
+            </>
+          }
+        >
+          Bookmarks
+        </Button>
+      </Link>
     </>
   );
 };
