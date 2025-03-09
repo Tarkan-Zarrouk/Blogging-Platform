@@ -221,7 +221,7 @@ const ProfileContent: React.FC = () => {
                                 >
                                   <div className="grid col-span-1">
                                     Email Verified:{" "}
-                                    {userInformation.emailVerified
+                                    {auth.currentUser?.emailVerified
                                       ? "True"
                                       : "False"}
                                   </div>

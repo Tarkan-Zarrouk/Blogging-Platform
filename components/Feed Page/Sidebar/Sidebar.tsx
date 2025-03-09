@@ -11,11 +11,9 @@ import { UserComponent } from "./ChildComponents/UserComponent";
 import { SidebarMenuItemsComponent } from "./ChildComponents/SidebarMenuItemsComponent";
 
 const Sidebar = () => {
-  const router = useRouter();
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
   return (
     <>
-      <Card className="mx-5">
+      <Card className="mx-5 h-52 fixed w-72">
         <CardHeader>
           <Button
             variant="light"

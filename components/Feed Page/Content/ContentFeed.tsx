@@ -15,7 +15,6 @@ import {
   CardFooter,
   Tooltip,
 } from "@heroui/react";
-import { randomUUID } from "crypto";
 import {
   addDoc,
   collection,
@@ -274,8 +273,6 @@ const ContentFeed: React.FC = () => {
                               Post Specific UID:{" "}
                               {post.user.posts[postIndex].postSpecificUID}
                             </span>
-                            {/* UUID: " + post.user.uid + "\n" + "Post Specific
-                            UUID: " */}
                           </div>
                         }
                         avatarProps={{ src: post.user.profilePicture }}
