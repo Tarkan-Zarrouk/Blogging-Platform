@@ -182,7 +182,8 @@ const Register: React.FC = () => {
           gender: "",
           sexualIdentity: "",
           createdAt: new Date().toISOString(),
-          uid: userUUID
+          uid: userUUID,
+          bookmarkedPosts: [],
         }).then(() => {
           setLoading(false);
           router.push("/login?registered=true");

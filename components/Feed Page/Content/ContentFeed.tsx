@@ -204,6 +204,62 @@ const ContentFeed: React.FC = () => {
     });
   };
 
+  const bookmarkPost = (userPostUID: string, postID: number) => {
+    const uid = auth.currentUser?.uid;
+    if (!uid) {
+      addToast({
+        title: "Error",
+        description: "User is not authenticated.",
+        color: "danger",
+      });
+      return router.push("/login");
+    }
+
+    getDoc(doc(db, "users", userPostUID)).then((docSnapshot) => {
+      if (docSnapshot.exists()) {
+        const post = docSnapshot.data().posts[postID];
+        getDoc(doc(db, "users", uid)).then((userDoc) => {
+          if (userDoc.exists()) {
+            const userData = userDoc.data();
+            const bookmarkedPosts = userData.bookmarkedPosts || [];
+
+            const isAlreadyBookmarked = bookmarkedPosts.some(
+              (bookmarkedPost: any) =>
+                bookmarkedPost.postSpecificUID === post.postSpecificUID
+            );
+
+            if (!isAlreadyBookmarked) {
+              updateDoc(doc(db, "users", uid), {
+                bookmarkedPosts: [...bookmarkedPosts, post],
+              }).then(() => {
+                addToast({
+                  title: "Post bookmarked",
+                  description: "Bookmarked Successfully.",
+                  color: "primary",
+                });
+              });
+            } else {
+              // remove bookmark
+              updateDoc(doc(db, "users", uid), {
+                bookmarkedPosts: bookmarkedPosts.filter(
+                  (bookmarkedPost: any) =>
+                    bookmarkedPost.postSpecificUID !== post.postSpecificUID
+                ),
+              }).then(() => {
+                addToast({
+                  title: "Post unbookmarked",
+                  description: "Unbookmarked Successfully.",
+                  color: "primary",
+                });
+              });
+              // likesArray = likesArray.filter((likeUID) => likeUID !== uid);
+            }
+          }
+        });
+      }
+    });
+  };
+
   return (
     <div className="flex flex-col items-start justify-start p-4">
       <Input
@@ -325,14 +381,30 @@ const ContentFeed: React.FC = () => {
                       </Button>
                     </Tooltip>
                     <Tooltip content="Bookmark post" showArrow>
-                      <Button
-                        size="sm"
-                        variant="light"
-                        color="primary"
-                        isIconOnly
-                      >
-                        <BookmarksIcon />
-                      </Button>
+                        {post.user.bookmarkedPosts.some(
+                        (bookmarkedPost: any) =>
+                          bookmarkedPost.postSpecificUID === post.postSpecificUID
+                        ) ? (
+                        <Button
+                          size="sm"
+                          onPress={() => bookmarkPost(post.user.uid, postIndex)}
+                          variant="light"
+                          color="primary"
+                          isIconOnly
+                        >
+                          <BookmarksIcon fill="black" />
+                        </Button>
+                        ) : (
+                        <Button
+                          size="sm"
+                          onPress={() => bookmarkPost(post.user.uid, postIndex)}
+                          variant="light"
+                          color="primary"
+                          isIconOnly
+                        >
+                          <BookmarksIcon />
+                        </Button>
+                        )}
                     </Tooltip>
                   </CardFooter>
                 </Card>
