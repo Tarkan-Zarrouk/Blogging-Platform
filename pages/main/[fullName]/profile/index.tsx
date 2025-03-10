@@ -14,10 +14,15 @@ import {
   CardBody,
   CardHeader,
   Input,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalHeader,
   Popover,
   PopoverContent,
   PopoverTrigger,
   Tooltip,
+  useDisclosure,
   User,
 } from "@heroui/react";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
@@ -27,6 +32,7 @@ import { useEffect, useState } from "react";
 
 const ProfileContent: React.FC = () => {
   const router = useRouter();
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [loading, setLoading] = useState<boolean>(false);
   const [modifyProfile, setModifyProfile] = useState<boolean>(false);
   const [userInformation, setUserInformation] = useState<ProfileInfo>({
@@ -193,102 +199,145 @@ const ProfileContent: React.FC = () => {
                         </span>
                       }
                       description={
-                        modifyProfile ? (
-                          <>
-                            <Input
-                              onChange={(e) =>
-                                setUserInformation({
-                                  ...userInformation,
-                                  pronouns: e.target.value,
-                                })
-                              }
-                              placeholder="Pronouns here :3"
-                              size="sm"
-                              variant="bordered"
-                              color="primary"
-                            />
-                            <Input
-                              onChange={(e) =>
-                                setUserInformation({
-                                  ...userInformation,
-                                  gender: e.target.value,
-                                })
-                              }
-                              placeholder="Gender here :>"
-                              size="sm"
-                              variant="bordered"
-                              color="primary"
-                            />
-                            <Input
-                              onChange={(e) =>
-                                setUserInformation({
-                                  ...userInformation,
-                                  sexualIdentity: e.target.value,
-                                })
-                              }
-                              placeholder="Sexuality here :>"
-                              size="sm"
-                              variant="bordered"
-                              color="primary"
-                            />
-                            <Button
-                              variant="bordered"
-                              color="primary"
-                              size="sm"
-                              onPress={editProfile}
-                              isLoading={loading}
-                            >
-                              Update
-                            </Button>
-                          </>
-                        ) : (
-                          <div className="grid grid-cols-1">
-                            <div className="grid col-span-1">
-                              Pronouns:{" "}
-                              {userInformation.pronouns ||
-                                "Click 'Edit Profile' to change it :)"}
-                            </div>
-                            <div className="grid col-span1">
-                              Gender:{" "}
-                              {userInformation.gender || "Not specified"}
-                            </div>
-                            <div className="grid col-span-1">
-                              Sexuality:{" "}
-                              {userInformation.sexualIdentity ||
-                                "Not specified"}
-                            </div>
-                            <Tooltip
-                              content="We have this for security reasons :) You can change verify it in settings :)"
-                              placement="bottom"
-                              showArrow
-                            >
-                              <div>
-                                <Tooltip
-                                  content="Note: Make sure to restart your browser after verifying email, we know it's not ideal."
-                                  color="warning"
-                                  placement="bottom"
-                                  showArrow
-                                >
-                                  <div className="grid col-span-1">
-                                    Email Verified:{" "}
-                                    {auth.currentUser?.emailVerified
-                                      ? "True"
-                                      : "False"}
-                                  </div>
-                                </Tooltip>
-                              </div>
-                            </Tooltip>
-                            <div>
-                              Created At:{" "}
-                              {new Date(
-                                userInformation.createdAt
-                              ).toLocaleDateString()}
-                            </div>
-                            <div className="text-[10px]">
-                              UID {userInformation.uid}
-                            </div>
-                          </div>
-                        )
+                        <>
+                          <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+                            <ModalContent className="p-5">
+                              <ModalHeader>
+                                <div className="border-b-1.5">
+                                  <h1 className="text-2xl font-bold underline">
+                                    Profile information
+                                  </h1>
+                                  <h5 className="text-md font-extralight">
+                                    The content below is your information you
+                                    set previously :)
+                                  </h5>
+                                </div>
+                              </ModalHeader>
+                              <ModalBody>
+                                <div>
+                                  {modifyProfile ? (
+                                    <div className="">
+                                      <Input
+                                        onChange={(e) =>
+                                          setUserInformation({
+                                            ...userInformation,
+                                            pronouns: e.target.value,
+                                          })
+                                        }
+                                        placeholder="Pronouns here :3"
+                                        size="sm"
+                                        variant="bordered"
+                                        color="primary"
+                                      />
+                                      <Input
+                                        onChange={(e) =>
+                                          setUserInformation({
+                                            ...userInformation,
+                                            gender: e.target.value,
+                                          })
+                                        }
+                                        placeholder="Gender here :>"
+                                        size="sm"
+                                        variant="bordered"
+                                        color="primary"
+                                      />
+                                      <Input
+                                        onChange={(e) =>
+                                          setUserInformation({
+                                            ...userInformation,
+                                            sexualIdentity: e.target.value,
+                                          })
+                                        }
+                                        placeholder="Sexuality here :>"
+                                        size="sm"
+                                        variant="bordered"
+                                        color="primary"
+                                      />
+                                      <Button
+                                        variant="bordered"
+                                        color="primary"
+                                        size="sm"
+                                        onPress={editProfile}
+                                        isLoading={loading}
+                                      >
+                                        Update
+                                      </Button>
+                                    </div>
+                                  ) : (
+                                    <div className="grid grid-cols-1 w-full">
+                                      <div className="grid col-span-1">
+                                        <span className="font-bold">
+                                          Pronouns:
+                                        </span>{" "}
+                                        {userInformation.pronouns ||
+                                          "Click 'Edit Profile' to change it :)"}
+                                      </div>
+                                      <div className="grid col-span-1">
+                                        <span className="font-bold">
+                                          Gender:
+                                        </span>{" "}
+                                        {userInformation.gender ||
+                                          "Not specified"}
+                                      </div>
+                                      <div className="grid col-span-1">
+                                        <span className="font-bold">
+                                          Sexuality:{" "}
+                                        </span>{" "}
+                                        {userInformation.sexualIdentity ||
+                                          "Not specified"}
+                                      </div>
+                                      <Tooltip
+                                        content="We have this for security reasons :) You can change verify it in settings :)"
+                                        placement="bottom"
+                                        showArrow
+                                      >
+                                        <div>
+                                          <Tooltip
+                                            content="Note: Make sure to restart your browser after verifying email, we know it's not ideal."
+                                            color="warning"
+                                            placement="bottom"
+                                            showArrow
+                                          >
+                                            <div className="grid col-span-1">
+                                              <span className="font-bold">
+                                                Email Verified:
+                                              </span>{" "}
+                                              {auth.currentUser?.emailVerified
+                                                ? "True"
+                                                : "False"}
+                                            </div>
+                                          </Tooltip>
+                                        </div>
+                                      </Tooltip>
+                                      <div>
+                                        <span className="font-bold">
+                                          Created At:
+                                        </span>{" "}
+                                        {new Date(
+                                          userInformation.createdAt
+                                        ).toLocaleDateString()}
+                                      </div>
+                                      <div>
+                                        <span className="font-bold">UID:</span>{" "}
+                                        {userInformation.uid}
+                                      </div>
+                                    </div>
+                                  )}
+                                </div>
+                              </ModalBody>
+                            </ModalContent>
+                          </Modal>
+                          <Button
+                            className="font-extralight"
+                            variant="bordered"
+                            size="sm"
+                            onPress={onOpen}
+                            color="primary"
+                            isIconOnly
+                          >
+                            i
+                          </Button>
+                        </>
                       }
                       avatarProps={{
                         src: userInformation.profilePicture,
@@ -384,6 +433,8 @@ const ProfileContent: React.FC = () => {
                             "/main/" +
                             userInformation.fullName +
                             "/profile/" +
+                            userInformation.uid +
+                            "/posts/" +
                             id
                           }
                         >
