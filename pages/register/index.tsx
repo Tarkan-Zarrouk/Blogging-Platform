@@ -134,6 +134,14 @@ const Register: React.FC = () => {
     }
   };
 
+  const registerUserWithEnterKey = (
+    e: React.KeyboardEvent<HTMLInputElement>
+  ) => {
+    if (e.key == "Enter") {
+      registerUser();
+    }
+  };
+
   const registerUser = async () => {
     try {
       setLoading(true);
@@ -219,6 +227,7 @@ const Register: React.FC = () => {
                 labelPlacement="outside"
                 variant="underlined"
                 color="primary"
+                onKeyDown={registerUserWithEnterKey}
                 isClearable
                 isRequired
               />
@@ -235,6 +244,7 @@ const Register: React.FC = () => {
                 labelPlacement="outside"
                 variant="underlined"
                 color="primary"
+                onKeyDown={registerUserWithEnterKey}
                 isClearable
                 isRequired
               />
@@ -251,6 +261,7 @@ const Register: React.FC = () => {
                 labelPlacement="outside"
                 variant="underlined"
                 color="primary"
+                onKeyDown={registerUserWithEnterKey}
                 endContent={
                   <>
                     <Button
@@ -278,6 +289,7 @@ const Register: React.FC = () => {
                 labelPlacement="outside"
                 variant="underlined"
                 color="primary"
+                onKeyDown={registerUserWithEnterKey}
                 isClearable
                 isRequired
               />

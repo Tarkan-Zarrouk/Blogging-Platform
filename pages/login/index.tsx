@@ -74,6 +74,12 @@ const LoginPage: React.FC = () => {
     });
   };
 
+  const signInUserWithEnterKey = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      signInUser();
+    }
+  };
+
   const signInUser = async () => {
     if (!testEmail(userInformation.email)) {
       setErrorState({
@@ -83,7 +89,6 @@ const LoginPage: React.FC = () => {
       });
       return;
     }
-
     if (userInformation.password.length < 8) {
       setErrorState({
         ...errorState,
@@ -127,8 +132,9 @@ const LoginPage: React.FC = () => {
               label="Email"
               labelPlacement="outside"
               placeholder="johndoe@example.com"
+              onKeyDown={signInUserWithEnterKey}
               isRequired
-            />
+              />
             <Input
               isInvalid={errorState.passwordErrorBool}
               errorMessage={errorState.passwordErrorMessage}
@@ -140,6 +146,7 @@ const LoginPage: React.FC = () => {
               labelPlacement="outside"
               variant="underlined"
               color="primary"
+              onKeyDown={signInUserWithEnterKey}
               endContent={
                 <>
                   <Button

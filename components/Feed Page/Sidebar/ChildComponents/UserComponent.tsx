@@ -59,7 +59,7 @@ export const UserComponent: React.FC = () => {
           <PopoverTrigger>
             <Button className="" variant="light">
               <User
-                description={userInformation.fullName}
+                description={auth.currentUser?.email}
                 name={userInformation.fullName}
                 avatarProps={{
                   src: userInformation.profilePicture,

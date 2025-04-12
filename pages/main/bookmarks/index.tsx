@@ -57,17 +57,11 @@ const Bookmarks = () => {
                       className="grid col-span-1 justify-self-center"
                       key={index}
                     >
-                      <Link
-                        href={"/main/bookmarks/" + post.ownerUID + "/" + index}
-                      >
-                        <Tooltip content="Click to view post!" showArrow>
-                          <Card>
-                            {post.attachment && (
-                              <img alt="post" src={post.attachment} />
-                            )}
-                          </Card>
-                        </Tooltip>
-                      </Link>
+                      <Card>
+                        {post.attachment && (
+                          <img alt="post" src={post.attachment} />
+                        )}
+                      </Card>
                     </div>
                   ))
                 ) : (

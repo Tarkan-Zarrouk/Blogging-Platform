@@ -45,7 +45,6 @@ const ContentFeed: React.FC = () => {
   const [isClient, setIsClient] = useState(false);
   const ITEMS_PER_PAGE = 5;
   const [currentPage, setCurrentPage] = useState(1);
-  const [changeLikeState, setChangeLikeState] = useState<boolean>(false);
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
@@ -376,15 +375,20 @@ const ContentFeed: React.FC = () => {
                       )}
                     </Tooltip>
                     <Tooltip content="Click to view comments" showArrow>
-                      <Button variant="light" color="primary" isIconOnly>
+                      <Button
+                        variant="light"
+                        color="primary"
+                        isIconOnly
+                      >
                         <CommentIcon />
                       </Button>
                     </Tooltip>
                     <Tooltip content="Bookmark post" showArrow>
-                        {post.user.bookmarkedPosts.some(
+                      {(post.user.bookmarkedPosts ?? []).some(
                         (bookmarkedPost: any) =>
-                          bookmarkedPost.postSpecificUID === post.postSpecificUID
-                        ) ? (
+                          bookmarkedPost.postSpecificUID ===
+                          post.postSpecificUID
+                      ) ? (
                         <Button
                           size="sm"
                           onPress={() => bookmarkPost(post.user.uid, postIndex)}
@@ -394,7 +398,7 @@ const ContentFeed: React.FC = () => {
                         >
                           <BookmarksIcon fill="black" />
                         </Button>
-                        ) : (
+                      ) : (
                         <Button
                           size="sm"
                           onPress={() => bookmarkPost(post.user.uid, postIndex)}
@@ -404,7 +408,7 @@ const ContentFeed: React.FC = () => {
                         >
                           <BookmarksIcon />
                         </Button>
-                        )}
+                      )}
                     </Tooltip>
                   </CardFooter>
                 </Card>
